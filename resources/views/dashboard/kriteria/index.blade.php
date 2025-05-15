@@ -14,11 +14,13 @@
                     <div class="flex justify-end items-center d p-4">
                         <div class="flex space-x-3">
                             <div class="flex space-x-3 items-center">
-                                <label for="add_button" class="btn btn-primary btn-sm text-white dark:text-gray-800 normal-case bg-purple-600 hover:bg-opacity-70 hover:border-opacity-70 dark:bg-purple-300 dark:hover:bg-opacity-90">
+                                <label for="add_button"
+                                    class="btn btn-primary btn-sm text-white dark:text-gray-800 normal-case bg-purple-600 hover:bg-opacity-70 hover:border-opacity-70 dark:bg-purple-300 dark:hover:bg-opacity-90">
                                     <i class="ri-add-fill"></i>
                                     Tambah {{ $judul }}
                                 </label>
-                                <label for="import_button" class="btn btn-sm text-white dark:text-gray-800 normal-case bg-green-600 hover:bg-green-600 hover:bg-opacity-70 hover:border-opacity-70 dark:bg-green-300 dark:hover:bg-green-300 dark:hover:bg-opacity-90 dark:border-green-300">
+                                <label for="import_button"
+                                    class="btn btn-sm text-white dark:text-gray-800 normal-case bg-green-600 hover:bg-green-600 hover:bg-opacity-70 hover:border-opacity-70 dark:bg-green-300 dark:hover:bg-green-300 dark:hover:bg-opacity-90 dark:border-green-300">
                                     <i class="ri-file-excel-line"></i>
                                     Import Data
                                 </label>
@@ -26,7 +28,9 @@
                         </div>
                     </div>
                     <div class="overflow-x-auto p-3">
-                        <table id="tabel_data" class="w-full text-sm text-left text-gray-500 dark:text-gray-400 stripe hover" style="width:100%; padding-top: 1em; padding-bottom: 1em;">
+                        <table id="tabel_data"
+                            class="w-full text-sm text-left text-gray-500 dark:text-gray-400 stripe hover"
+                            style="width:100%; padding-top: 1em; padding-bottom: 1em;">
                             <thead class="text-xs text-gray-700 uppercase bg-gray-50">
                                 <tr>
                                     <th scope="col" class="px-4 py-3">Kode</th>
@@ -40,10 +44,12 @@
                                         <td class="px-4 py-3">{{ $item->kode }}</td>
                                         <td class="px-4 py-3">{{ $item->nama }}</td>
                                         <td class="px-4 py-3">
-                                            <label for="edit_button" class="btn btn-sm btn-warning text-white" onclick="return edit_button('{{ $item->id }}')">
+                                            <label for="edit_button" class="btn btn-sm btn-warning text-white"
+                                                onclick="return edit_button('{{ $item->id }}')">
                                                 <i class="ri-pencil-line"></i>
                                             </label>
-                                            <button class="btn btn-sm btn-error text-white" onclick="return delete_button('{{ $item->id }}', '{{ $item->nama }}');">
+                                            <button class="btn btn-sm btn-error text-white"
+                                                onclick="return delete_button('{{ $item->id }}', '{{ $item->nama }}');">
                                                 <i class="ri-delete-bin-line"></i>
                                             </button>
                                         </td>
@@ -61,29 +67,33 @@
                 <div class="modal-box">
                     <form action="{{ route('kriteria.simpan') }}" method="post" enctype="multipart/form-data">
                         <h3 class="font-bold text-lg">Tambah {{ $judul }}</h3>
-                            @csrf
-                            <div class="form-control w-full max-w-xs">
-                                <label class="label">
-                                    <span class="label-text">Kode</span>
-                                </label>
-                                <input type="text" name="kode" placeholder="Type here" class="input input-bordered w-full max-w-xs text-gray-800 bg-slate-100" value="{{ $kode }}" readonly required />
-                                <label class="label">
-                                    @error('kode')
-                                        <span class="label-text-alt text-error">{{ $message }}</span>
-                                    @enderror
-                                </label>
-                            </div>
-                            <div class="form-control w-full max-w-xs">
-                                <label class="label">
-                                    <span class="label-text">Nama</span>
-                                </label>
-                                <input type="text" name="nama" placeholder="Type here" class="input input-bordered w-full max-w-xs text-gray-800" value="{{ old('nama') }}" required />
-                                <label class="label">
-                                    @error('nama')
-                                        <span class="label-text-alt text-error">{{ $message }}</span>
-                                    @enderror
-                                </label>
-                            </div>
+                        @csrf
+                        <div class="form-control w-full max-w-xs">
+                            <label class="label">
+                                <span class="label-text">Kode</span>
+                            </label>
+                            <input type="text" name="kode" placeholder="Type here"
+                                class="input input-bordered w-full max-w-xs text-gray-800 bg-slate-100"
+                                value="{{ $kode }}" readonly required />
+                            <label class="label">
+                                @error('kode')
+                                    <span class="label-text-alt text-error">{{ $message }}</span>
+                                @enderror
+                            </label>
+                        </div>
+                        <div class="form-control w-full max-w-xs">
+                            <label class="label">
+                                <span class="label-text">Nama</span>
+                            </label>
+                            <input type="text" name="nama" placeholder="Type here"
+                                class="input input-bordered w-full max-w-xs text-gray-800" value="{{ old('nama') }}"
+                                required />
+                            <label class="label">
+                                @error('nama')
+                                    <span class="label-text-alt text-error">{{ $message }}</span>
+                                @enderror
+                            </label>
+                        </div>
                         <div class="modal-action">
                             <button type="submit" class="btn btn-success">Simpan</button>
                             <label for="add_button" class="btn">Batal</label>
@@ -98,33 +108,36 @@
             <div class="modal">
                 <div class="modal-box" id="edit_form">
                     <form action="{{ route('kriteria.perbarui') }}" method="post" enctype="multipart/form-data">
-                        <h3 class="font-bold text-lg">Ubah {{ $judul }}: <span class="text-greenPrimary" id="title_form"><span class="loading loading-dots loading-md"></span></span></h3>
-                            @csrf
-                            <input type="text" name="id" hidden />
-                            <div class="form-control w-full max-w-xs">
-                                <label class="label">
-                                    <span class="label-text">Kode</span>
-                                    <span class="label-text-alt" id="loading_edit1"></span>
-                                </label>
-                                <input type="text" name="kode" placeholder="Type here" class="input input-bordered w-full text-gray-800" required />
-                                <label class="label">
-                                    @error('kode')
-                                        <span class="label-text-alt text-error">{{ $message }}</span>
-                                    @enderror
-                                </label>
-                            </div>
-                            <div class="form-control w-full max-w-xs">
-                                <label class="label">
-                                    <span class="label-text">Nama</span>
-                                    <span class="label-text-alt" id="loading_edit2"></span>
-                                </label>
-                                <input type="text" name="nama" placeholder="Type here" class="input input-bordered w-full text-gray-800" required />
-                                <label class="label">
-                                    @error('nama')
-                                        <span class="label-text-alt text-error">{{ $message }}</span>
-                                    @enderror
-                                </label>
-                            </div>
+                        <h3 class="font-bold text-lg">Ubah {{ $judul }}: <span class="text-greenPrimary"
+                                id="title_form"><span class="loading loading-dots loading-md"></span></span></h3>
+                        @csrf
+                        <input type="text" name="id" hidden />
+                        <div class="form-control w-full max-w-xs">
+                            <label class="label">
+                                <span class="label-text">Kode</span>
+                                <span class="label-text-alt" id="loading_edit1"></span>
+                            </label>
+                            <input type="text" name="kode" placeholder="Type here"
+                                class="input input-bordered w-full text-gray-800" required />
+                            <label class="label">
+                                @error('kode')
+                                    <span class="label-text-alt text-error">{{ $message }}</span>
+                                @enderror
+                            </label>
+                        </div>
+                        <div class="form-control w-full max-w-xs">
+                            <label class="label">
+                                <span class="label-text">Nama</span>
+                                <span class="label-text-alt" id="loading_edit2"></span>
+                            </label>
+                            <input type="text" name="nama" placeholder="Type here"
+                                class="input input-bordered w-full text-gray-800" required />
+                            <label class="label">
+                                @error('nama')
+                                    <span class="label-text-alt text-error">{{ $message }}</span>
+                                @enderror
+                            </label>
+                        </div>
                         <div class="modal-action">
                             <button type="submit" class="btn btn-success">Perbarui</button>
                             <label for="edit_button" class="btn">Batal</label>
@@ -140,18 +153,19 @@
                 <div class="modal-box">
                     <form action="{{ route('kriteria.import') }}" method="post" enctype="multipart/form-data">
                         <h3 class="font-bold text-lg">Import {{ $judul }}</h3>
-                            @csrf
-                            <div class="form-control w-full max-w-xs">
-                                <label class="label">
-                                    <span class="label-text">Import File</span>
-                                </label>
-                                <input type="file" name="import_data" class="file-input file-input-bordered w-full max-w-xs" required />
-                                <label class="label">
-                                    @error('import_data')
-                                        <span class="label-text-alt text-error">{{ $message }}</span>
-                                    @enderror
-                                </label>
-                            </div>
+                        @csrf
+                        <div class="form-control w-full max-w-xs">
+                            <label class="label">
+                                <span class="label-text">Import File</span>
+                            </label>
+                            <input type="file" name="import_data"
+                                class="file-input file-input-bordered w-full max-w-xs" required />
+                            <label class="label">
+                                @error('import_data')
+                                    <span class="label-text-alt text-error">{{ $message }}</span>
+                                @enderror
+                            </label>
+                        </div>
                         <div class="modal-action">
                             <button type="submit" class="btn btn-success">Import</button>
                             <label for="import_button" class="btn">Batal</label>
@@ -168,11 +182,11 @@
     <script>
         $(document).ready(function() {
             $('#tabel_data').DataTable({
-                responsive: true,
-                order: [],
-            })
-            .columns.adjust()
-            .responsive.recalc();
+                    responsive: true,
+                    order: [],
+                })
+                .columns.adjust()
+                .responsive.recalc();
         });
 
         @if (session()->has('berhasil'))
@@ -198,15 +212,16 @@
         @if ($errors->any())
             Swal.fire({
                 title: 'Gagal',
-                text: @foreach ($errors->all() as $error) '{{ $error }}' @endforeach,
+                text: @foreach ($errors->all() as $error)
+                    '{{ $error }}'
+                @endforeach ,
                 icon: 'error',
                 confirmButtonColor: '#6419E6',
                 confirmButtonText: 'OK',
             })
         @endif
 
-        function edit_button(id) {
-            // Loading effect start
+        window.edit_button = function(id) {
             let loading = `<span class="loading loading-dots loading-md text-purple-600"></span>`;
             $("#title_form").html(loading);
             $("#loading_edit1").html(loading);
@@ -219,8 +234,7 @@
                     "_token": "{{ csrf_token() }}",
                     "id": id
                 },
-                success: function (data) {
-                    // console.log(data);
+                success: function(data) {
                     let items = [];
                     $.each(data, function(key, val) {
                         items.push(val);
@@ -231,19 +245,16 @@
                     $("input[name='kode']").val(items[1]);
                     $("input[name='nama']").val(items[2]);
 
-                    // Loading effect end
-                    loading = "";
-                    $("#loading_edit1").html(loading);
-                    $("#loading_edit2").html(loading);
+                    $("#loading_edit1").html("");
+                    $("#loading_edit2").html("");
                 }
             });
         }
 
-        function delete_button(id, nama) {
+        window.delete_button = function(id, nama) {
             Swal.fire({
                 title: 'Apakah Anda yakin?',
-                html:
-                    "<p>Data tidak dapat dipulihkan kembali!</p>" +
+                html: "<p>Data tidak dapat dipulihkan kembali!</p>" +
                     "<div class='divider'></div>" +
                     "<b>Data: " + nama + "</b>",
                 icon: 'warning',
@@ -261,7 +272,7 @@
                             "_token": "{{ csrf_token() }}",
                             "id": id
                         },
-                        success: function (response) {
+                        success: function(response) {
                             Swal.fire({
                                 title: 'Data berhasil dihapus!',
                                 icon: 'success',
@@ -272,8 +283,8 @@
                                     location.reload();
                                 }
                             });
-                        },s
-                        error: function (response) {
+                        },
+                        error: function(response) {
                             Swal.fire({
                                 icon: 'error',
                                 title: 'Data gagal dihapus!',

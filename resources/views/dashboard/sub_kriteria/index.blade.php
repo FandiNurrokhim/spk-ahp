@@ -245,7 +245,7 @@
             })
         @endif
 
-        function edit_button(id, kriteria) {
+        window.edit_button = function(id) {
             // Loading effect start
             let loading = `<span class="loading loading-dots loading-md text-purple-600"></span>`;
             $("#title_form").html(loading);
@@ -281,7 +281,7 @@
             });
         }
 
-        function delete_button(id, kriteria, nama) {
+        window.delete_button = function(id, nama) {
             Swal.fire({
                 title: 'Apakah Anda yakin?',
                 html:
