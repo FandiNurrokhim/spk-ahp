@@ -7,9 +7,7 @@
                     <script>
                         document.write(new Date().getFullYear() + ",");
                     </script>
-                    made with <i class="ri-heart-fill text-red-500"></i> by
-                    <a href="https://github.com/Akbarwp" class="font-semibold text-gray-500 dark:text-purple-200" target="_blank">AkbarWP</a>
-                    for a better web.
+                    AHP SYSTEM INDAH
                 </div>
             </div>
         </div>
