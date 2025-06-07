@@ -18,7 +18,23 @@ class AlternatifSeeder extends Seeder
      */
     public function run(): void
     {
-        Alternatif::factory(10)->create();
+        $namaAlternatif = [
+            'Indah Nur Paraswati',
+            'Fahcri Taufiqurrahman',
+            'Shendi Teuku Maulana Efendi',
+            'Rangga Ranubaya',
+            'Rahaditya Rizky Sutopo Putri',
+            'Seviannanda Kurniawan',
+        ];
+
+        foreach ($namaAlternatif as $nama) {
+            Alternatif::create([
+                'nama' => $nama,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
+
         $this->add_penilaian_alternatif();
         $this->perhitungan_alternatif();
     }
@@ -51,9 +67,9 @@ class AlternatifSeeder extends Seeder
         $matriksNilaiSubKriteria = DB::table('matriks_nilai_prioritas_kriteria')->get();
 
         DB::table('hasil_solusi_ahp')->truncate();
-        foreach($penilaian->unique('alternatif_id') as $item) {
+        foreach ($penilaian->unique('alternatif_id') as $item) {
             $nilai = 0;
-            foreach($penilaian->where('alternatif_id', $item->alternatif_id) as $value) {
+            foreach ($penilaian->where('alternatif_id', $item->alternatif_id) as $value) {
                 $kriteria = $matriksNilaiKriteria->where('kriteria_id', $value->kriteria_id)->first()->prioritas;
                 $subKriteria = $matriksNilaiSubKriteria->where('kriteria_id', $value->kriteria_id)->where('kategori_id', $value->subKriteria->kategori->id)->first();
                 $nilai += $kriteria * $subKriteria->prioritas;

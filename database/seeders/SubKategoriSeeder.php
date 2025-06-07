@@ -19,8 +19,17 @@ class SubKategoriSeeder extends Seeder
     {
         $kriteria = Kriteria::orderBy('id')->get();
         $kategori = Kategori::orderBy('id')->get();
-        $namaSubKategori = ["AA", "BB", "CC", "DD"];
-        $nilaiSubKategori = [1, 3, 5, 0.33, 1, 3, 0.2, 0.33, 1];
+        $namaSubKategori = ["A", "B", "C", "D"];
+        $nilaiSubKategori = [
+            // K1 vs K1, K1 vs K2, K1 vs K3, K1 vs K4
+            1,   3,   5,   0.5,
+            // K2 vs K1, K2 vs K2, K2 vs K3, K2 vs K4
+            0.33, 1,   2,   0.25,
+            // K3 vs K1, K3 vs K2, K3 vs K3, K3 vs K4
+            0.2,  0.5, 1,   0.33,
+            // K4 vs K1, K4 vs K2, K4 vs K3, K4 vs K4
+            2,    4,   3,   1,
+        ];
 
         foreach ($kriteria as $kri) {
             $i = 0;

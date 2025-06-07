@@ -14,13 +14,16 @@ class KategoriSeeder extends Seeder
     public function run(): void
     {
         Kategori::create([
-            "nama" => "Baik",
+            "nama" => "Akademik",
         ]);
         Kategori::create([
-            "nama" => "Cukup",
+            "nama" => "Non Akademik",
         ]);
         Kategori::create([
-            "nama" => "Kurang",
+            "nama" => "Psikologis",
+        ]);
+        Kategori::create([
+            "nama" => "Kepribadian",
         ]);
     }
 }

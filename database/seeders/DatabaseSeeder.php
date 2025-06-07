@@ -19,10 +19,10 @@ class DatabaseSeeder extends Seeder
         $this->call([
             UserSeeder::class,
             IRSeeder::class,
-            // KriteriaSeeder::class,
-            // KategoriSeeder::class,
-            // SubKategoriSeeder::class,
-            // AlternatifSeeder::class,
+            KriteriaSeeder::class,
+            KategoriSeeder::class,
+            SubKategoriSeeder::class,
+            AlternatifSeeder::class,
         ]);
     }
 }

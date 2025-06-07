@@ -17,14 +17,12 @@ class KriteriaSeeder extends Seeder
     public function run(): void
     {
         $kriteriaData = [
-            ["kode" => "MP00001", "nama" => "Matematika"],
-            ["kode" => "MP00002", "nama" => "Bahasa Indonesia"],
-            ["kode" => "MP00003", "nama" => "Bahasa Inggris"],
-            ["kode" => "MP00004", "nama" => "IPA"],
-            ["kode" => "MP00005", "nama" => "IPS"],
-            ["kode" => "MP00006", "nama" => "Agama"],
-            ["kode" => "MP00007", "nama" => "Pendidikan Pancasila"],
-            ["kode" => "MP00008", "nama" => "Olahraga"],
+            ["kode" => "MP00001", "nama" => "Nilai Akademik (NA)"],
+            ["kode" => "MP00002", "nama" => "Tes Potensi Akademik (TPA)"],
+            ["kode" => "MP00003", "nama" => "Prestasi Non Akademik (PNA)"],
+            ["kode" => "MP00004", "nama" => "Hasil Wawancara (HW)"],
+            ["kode" => "MP00005", "nama" => "Tes Psikologi (IQ)"],
+            ["kode" => "MP00006", "nama" => "Rekomendasi Guru (RG)"],
         ];
 
         // Loop untuk insert
@@ -53,10 +51,6 @@ class KriteriaSeeder extends Seeder
             [0,    0,    0,    0,    1,    2,    2,    2],
             // Agama
             [0,    0,    0,    0,    0,    1,    2,    2],
-            // PPKN
-            [0,    0,    0,    0,    0,    0,    1,    2],
-            // Olahraga
-            [0,    0,    0,    0,    0,    0,    0,    1],
         ];
 
         // Insert ke tabel matriks_perbandingan_utama
