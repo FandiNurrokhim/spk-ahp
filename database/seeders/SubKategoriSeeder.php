@@ -3,12 +3,10 @@
 namespace Database\Seeders;
 
 use Carbon\Carbon;
-use App\Models\Kategori;
 use App\Models\Kriteria;
 use App\Models\SubKriteria;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
 class SubKategoriSeeder extends Seeder
 {
@@ -18,186 +16,125 @@ class SubKategoriSeeder extends Seeder
     public function run(): void
     {
         $kriteria = Kriteria::orderBy('id')->get();
-        $kategori = Kategori::orderBy('id')->get();
-        $namaSubKategori = ["A", "B", "C", "D"];
-        $nilaiSubKategori = [
-            // K1 vs K1, K1 vs K2, K1 vs K3, K1 vs K4
+        $namaSubKriteria = ["A", "B", "C", "D"];
+        $nilaiSubKriteria = [
+            // S1 vs S1, S1 vs S2, S1 vs S3, S1 vs S4
             1,   3,   5,   0.5,
-            // K2 vs K1, K2 vs K2, K2 vs K3, K2 vs K4
+            // S2 vs S1, S2 vs S2, S2 vs S3, S2 vs S4
             0.33, 1,   2,   0.25,
-            // K3 vs K1, K3 vs K2, K3 vs K3, K3 vs K4
+            // S3 vs S1, S3 vs S2, S3 vs S3, S3 vs S4
             0.2,  0.5, 1,   0.33,
-            // K4 vs K1, K4 vs K2, K4 vs K3, K4 vs K4
+            // S4 vs S1, S4 vs S2, S4 vs S3, S4 vs S4
             2,    4,   3,   1,
         ];
 
         foreach ($kriteria as $kri) {
-            $i = 0;
-            $j = 0;
-            foreach ($kategori as $kat) {
-                SubKriteria::create([
-                    "nama" => $namaSubKategori[$i],
+            $subKriteriaIds = [];
+            // Insert subkriteria untuk setiap kriteria
+            foreach ($namaSubKriteria as $nama) {
+                $sub = SubKriteria::create([
+                    "nama" => $nama,
                     "kriteria_id" => $kri->id,
-                    "kategori_id" => $kat->id,
                 ]);
-                $i++;
+                $subKriteriaIds[] = $sub->id;
+            }
 
-                foreach ($kategori as $katBanding) {
-                    DB::table('matriks_perbandingan_kriteria')->insert([
-                        'nilai' => $nilaiSubKategori[$j],
+            // Isi matriks_perbandingan_subkriteria
+            $j = 0;
+            foreach ($subKriteriaIds as $i1) {
+                foreach ($subKriteriaIds as $i2) {
+                    DB::table('matriks_perbandingan_subkriteria')->insert([
+                        'nilai' => $nilaiSubKriteria[$j],
                         'kriteria_id' => $kri->id,
-                        'kategori_id' => $kat->id,
-                        'kategori_id_banding' => $katBanding->id,
+                        'subkriteria_id' => $i1,
+                        'subkriteria_id_banding' => $i2,
                         'created_at' => Carbon::now(),
                         'updated_at' => Carbon::now(),
                     ]);
                     $j++;
                 }
             }
-            // $this->add_matriks_perbandingan($kri->id);
-            $this->matriks_nilai_kriteria($kri->id);
-            $this->matriks_penjumlahan_kriteria($kri->id);
+
+            $this->matriks_nilai_subkriteria($kri->id, $subKriteriaIds);
+            $this->matriks_penjumlahan_subkriteria($kri->id, $subKriteriaIds);
         }
     }
 
-    public function add_matriks_perbandingan($kriteria_id)
+    public function matriks_nilai_subkriteria($kriteria_id, $subKriteriaIds)
     {
-        $kategori = Kategori::orderBy('id', 'asc')->get();
-
-        foreach ($kategori as $item) {
-            foreach ($kategori as $value) {
-                $matriksPerbandingan = DB::table('matriks_perbandingan_kriteria')->where('kriteria_id', $kriteria_id)->where('kategori_id', $item->id)->where('kategori_id_banding', $value->id)->first();
-
-                if ($matriksPerbandingan == null) {
-                    if ($item->id == $value->id) {
-                        DB::table('matriks_perbandingan_kriteria')->insert([
-                            'nilai' => 1,
-                            'kriteria_id' => $kriteria_id,
-                            'kategori_id' => $item->id,
-                            'kategori_id_banding' => $value->id,
-                            'created_at' => Carbon::now(),
-                            'updated_at' => Carbon::now(),
-                        ]);
-
-                    } else {
-                        DB::table('matriks_perbandingan_kriteria')->insert([
-                            'nilai' => null,
-                            'kriteria_id' => $kriteria_id,
-                            'kategori_id' => $item->id,
-                            'kategori_id_banding' => $value->id,
-                            'created_at' => Carbon::now(),
-                            'updated_at' => Carbon::now(),
-                        ]);
-                    }
-
-                } elseif ($matriksPerbandingan->kategori_id_banding != $value->id) {
-                    if ($item->id == $value->id) {
-                        DB::table('matriks_perbandingan_kriteria')->insert([
-                            'nilai' => 1,
-                            'kriteria_id' => $kriteria_id,
-                            'kategori_id' => $item->id,
-                            'kategori_id_banding' => $value->id,
-                            'created_at' => Carbon::now(),
-                            'updated_at' => Carbon::now(),
-                        ]);
-
-                    } else {
-                        DB::table('matriks_perbandingan_kriteria')->insert([
-                            'nilai' => null,
-                            'kriteria_id' => $kriteria_id,
-                            'kategori_id' => $item->id,
-                            'kategori_id_banding' => $value->id,
-                            'created_at' => Carbon::now(),
-                            'updated_at' => Carbon::now(),
-                        ]);
-                    }
-                }
-            }
-        }
-    }
-
-    public function matriks_nilai_kriteria($kriteria_id)
-    {
-        $matriksPerbandingan = DB::table('matriks_perbandingan_kriteria as mpk')
-            ->where('mpk.kriteria_id', $kriteria_id)
-            ->orderBy('mpk.kategori_id', 'asc')
-            ->orderBy('mpk.kategori_id_banding', 'asc')
+        $matriksPerbandingan = DB::table('matriks_perbandingan_subkriteria')
+            ->where('kriteria_id', $kriteria_id)
+            ->orderBy('subkriteria_id', 'asc')
+            ->orderBy('subkriteria_id_banding', 'asc')
             ->get();
 
-        $kategori = Kategori::orderBy('id', 'asc')->get();
+        DB::table('matriks_nilai_subkriteria')->where('kriteria_id', $kriteria_id)->delete();
+        DB::table('matriks_nilai_prioritas_subkriteria')->where('kriteria_id', $kriteria_id)->delete();
 
-        DB::table('matriks_nilai_kriteria')->where('kriteria_id', $kriteria_id)->delete();
-        DB::table('matriks_nilai_prioritas_kriteria')->where('kriteria_id', $kriteria_id)->delete();
         foreach ($matriksPerbandingan as $item) {
-            $jumlahNilai = $matriksPerbandingan->where('kategori_id_banding', $item->kategori_id_banding)->sum('nilai');
-
-            DB::table('matriks_nilai_kriteria')->insert([
+            $jumlahNilai = $matriksPerbandingan->where('subkriteria_id_banding', $item->subkriteria_id_banding)->sum('nilai');
+            DB::table('matriks_nilai_subkriteria')->insert([
                 'nilai' => $item->nilai / $jumlahNilai,
                 'kriteria_id' => $item->kriteria_id,
-                'kategori_id' => $item->kategori_id,
-                'kategori_id_banding' => $item->kategori_id_banding,
+                'subkriteria_id' => $item->subkriteria_id,
+                'subkriteria_id_banding' => $item->subkriteria_id_banding,
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now(),
             ]);
         }
 
-        $matriksNilai = DB::table('matriks_nilai_kriteria as mnk')->where('kriteria_id', $kriteria_id)->get();
+        $matriksNilai = DB::table('matriks_nilai_subkriteria')->where('kriteria_id', $kriteria_id)->get();
 
-        foreach ($kategori as $item) {
-            $nilai = $matriksNilai->where('kategori_id', $item->id)->sum('nilai');
-            $jumlahKriteria = $kategori->count();
+        foreach ($subKriteriaIds as $id) {
+            $nilai = $matriksNilai->where('subkriteria_id', $id)->sum('nilai');
+            $jumlah = count($subKriteriaIds);
 
-            DB::table('matriks_nilai_prioritas_kriteria')->insert([
-                'prioritas' => $nilai / $jumlahKriteria,
+            DB::table('matriks_nilai_prioritas_subkriteria')->insert([
+                'prioritas' => $nilai / $jumlah,
                 'kriteria_id' => $kriteria_id,
-                'kategori_id' => $item->id,
+                'subkriteria_id' => $id,
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now(),
             ]);
         }
     }
 
-    public function matriks_penjumlahan_kriteria($kriteria_id)
+    public function matriks_penjumlahan_subkriteria($kriteria_id, $subKriteriaIds)
     {
-        $matriksPerbandingan = DB::table('matriks_perbandingan_kriteria as mpk')
+        $matriksPerbandingan = DB::table('matriks_perbandingan_subkriteria')
             ->where('kriteria_id', $kriteria_id)
-            ->orderBy('mpk.kategori_id', 'asc')
-            ->orderBy('mpk.kategori_id_banding', 'asc')
+            ->orderBy('subkriteria_id', 'asc')
+            ->orderBy('subkriteria_id_banding', 'asc')
             ->get();
 
-        $matriksNilaiPrioritas = DB::table('matriks_nilai_prioritas_kriteria')->where('kriteria_id', $kriteria_id)->get();
+        $matriksNilaiPrioritas = DB::table('matriks_nilai_prioritas_subkriteria')->where('kriteria_id', $kriteria_id)->get();
 
-        $kategori = Kategori::orderBy('id', 'asc')->get();
+        DB::table('matriks_penjumlahan_subkriteria')->where('kriteria_id', $kriteria_id)->delete();
+        DB::table('matriks_penjumlahan_prioritas_subkriteria')->where('kriteria_id', $kriteria_id)->delete();
 
-        DB::table('matriks_penjumlahan_kriteria')->where('kriteria_id', $kriteria_id)->delete();
-        DB::table('matriks_penjumlahan_prioritas_kriteria')->where('kriteria_id', $kriteria_id)->delete();
         foreach ($matriksPerbandingan as $item) {
-            $prioritas = $matriksNilaiPrioritas->where('kategori_id', $item->kategori_id_banding)->first()->prioritas;
+            $prioritas = $matriksNilaiPrioritas->where('subkriteria_id', $item->subkriteria_id_banding)->first()->prioritas;
 
-            DB::table('matriks_penjumlahan_kriteria')->insert([
+            DB::table('matriks_penjumlahan_subkriteria')->insert([
                 'nilai' => $item->nilai * $prioritas,
                 'kriteria_id' => $item->kriteria_id,
-                'kategori_id' => $item->kategori_id,
-                'kategori_id_banding' => $item->kategori_id_banding,
+                'subkriteria_id' => $item->subkriteria_id,
+                'subkriteria_id_banding' => $item->subkriteria_id_banding,
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now(),
             ]);
         }
 
-        $matriksPenjumlahan = DB::table('matriks_penjumlahan_kriteria as mpk')
-            ->where('kriteria_id', $kriteria_id)
-            ->orderBy('mpk.kategori_id', 'asc')
-            ->orderBy('mpk.kategori_id_banding', 'asc')
-            ->get();
+        $matriksPenjumlahan = DB::table('matriks_penjumlahan_subkriteria')->where('kriteria_id', $kriteria_id)->get();
 
-        foreach ($kategori as $item) {
-            $nilai = $matriksPenjumlahan->where('kategori_id', $item->id)->sum('nilai');
-            $prioritas = $matriksNilaiPrioritas->where('kategori_id', $item->id)->first()->prioritas;
+        foreach ($subKriteriaIds as $id) {
+            $nilai = $matriksPenjumlahan->where('subkriteria_id', $id)->sum('nilai');
+            $prioritas = $matriksNilaiPrioritas->where('subkriteria_id', $id)->first()->prioritas;
 
-            DB::table('matriks_penjumlahan_prioritas_kriteria')->insert([
+            DB::table('matriks_penjumlahan_prioritas_subkriteria')->insert([
                 'prioritas' => $nilai / $prioritas,
                 'kriteria_id' => $kriteria_id,
-                'kategori_id' => $item->id,
+                'subkriteria_id' => $id,
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now(),
             ]);

@@ -20,8 +20,7 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,
             IRSeeder::class,
             KriteriaSeeder::class,
-            KategoriSeeder::class,
-            SubKategoriSeeder::class,
+            // SubKategoriSeeder::class,
             AlternatifSeeder::class,
         ]);
     }

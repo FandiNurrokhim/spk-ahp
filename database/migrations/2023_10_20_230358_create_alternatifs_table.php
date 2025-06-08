@@ -18,15 +18,15 @@ return new class extends Migration
             $table->string('nama');
             $table->timestamps();
         });
-
+    
         Schema::create('penilaian', function (Blueprint $table) {
             $table->id();
             $table->foreignId("alternatif_id")->constrained("alternatif", "id");
             $table->foreignId("kriteria_id")->constrained("kriteria", "id");
-            $table->foreignId("sub_kriteria_id")->nullable()->constrained("sub_kriteria", "id");
+            $table->double('nilai');
             $table->timestamps();
         });
-
+    
         Schema::create('hasil_solusi_ahp', function (Blueprint $table) {
             $table->id();
             $table->double('nilai');

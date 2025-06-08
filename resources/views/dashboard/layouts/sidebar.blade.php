@@ -35,27 +35,10 @@
                 @endif
                 <a class="{{ Request::is('dashboard/kriteria/perhitungan_utama*') ? 'font-semibold text-purple-600 dark:text-purple-300' : 'text-gray-500 dark:text-gray-100' }} inline-flex items-center w-full text-sm transition-colors duration-150 hover:text-purple-600 dark:hover:text-purple-300" href="{{ route('perhitungan_utama') }}">
                     <i class="ri-table-line text-lg"></i>
-                    <span class="ml-4">Perhitungan AHP Kriteria Utama</span>
+                    <span class="ml-4">Perbandingan Kriteria</span>
                 </a>
             </li>
-            <li class="relative px-6 pt-3">
-                @if (Request::is('dashboard/kategori*'))
-                    <span class="absolute inset-y-0 left-0 w-1 bg-purple-600 rounded-tr-lg rounded-br-lg" aria-hidden="true"></span>
-                @endif
-                <a class="{{ Request::is('dashboard/kategori*') ? 'font-semibold text-purple-600 dark:text-purple-300' : 'text-gray-500 dark:text-gray-100' }} inline-flex items-center w-full text-sm transition-colors duration-150 hover:text-purple-600 dark:hover:text-purple-300" href="{{ route('kategori') }}">
-                    <i class="ri-layout-3-line text-lg"></i>
-                    <span class="ml-4">Kategori</span>
-                </a>
-            </li>
-            <li class="relative px-6 pt-3">
-                @if (Request::is('dashboard/sub_kriteria*'))
-                    <span class="absolute inset-y-0 left-0 w-1 bg-purple-600 rounded-tr-lg rounded-br-lg" aria-hidden="true"></span>
-                @endif
-                <a class="{{ Request::is('dashboard/sub_kriteria*') ? 'font-semibold text-purple-600 dark:text-purple-300' : 'text-gray-500 dark:text-gray-100' }} inline-flex items-center w-full text-sm transition-colors duration-150 hover:text-purple-600 dark:hover:text-purple-300" href="{{ route('sub_kriteria') }}">
-                    <i class="ri-collage-line text-lg"></i>
-                    <span class="ml-4">Sub Kriteria</span>
-                </a>
-            </li>
+        
 
             {{-- Data AHP --}}
             <li class="w-full mt-6">
@@ -141,25 +124,7 @@
                 @endif
                 <a class="{{ Request::is('dashboard/kriteria/perhitungan_utama*') ? 'font-semibold text-purple-600 dark:text-purple-300' : 'text-gray-500 dark:text-gray-100' }} inline-flex items-center w-full text-sm transition-colors duration-150 hover:text-purple-600 dark:hover:text-purple-300" href="{{ route('perhitungan_utama') }}">
                     <i class="ri-table-line text-lg"></i>
-                    <span class="ml-4">Perhitungan AHP Kriteria Utama</span>
-                </a>
-            </li>
-            <li class="relative px-6 pt-3">
-                @if (Request::is('dashboard/kategori*'))
-                    <span class="absolute inset-y-0 left-0 w-1 bg-purple-600 rounded-tr-lg rounded-br-lg" aria-hidden="true"></span>
-                @endif
-                <a class="{{ Request::is('dashboard/kategori*') ? 'font-semibold text-purple-600 dark:text-purple-300' : 'text-gray-500 dark:text-gray-100' }} inline-flex items-center w-full text-sm transition-colors duration-150 hover:text-purple-600 dark:hover:text-purple-300" href="{{ route('kategori') }}">
-                    <i class="ri-layout-3-line text-lg"></i>
-                    <span class="ml-4">Kategori</span>
-                </a>
-            </li>
-            <li class="relative px-6 pt-3">
-                @if (Request::is('dashboard/sub_kriteria*'))
-                    <span class="absolute inset-y-0 left-0 w-1 bg-purple-600 rounded-tr-lg rounded-br-lg" aria-hidden="true"></span>
-                @endif
-                <a class="{{ Request::is('dashboard/sub_kriteria*') ? 'font-semibold text-purple-600 dark:text-purple-300' : 'text-gray-500 dark:text-gray-100' }} inline-flex items-center w-full text-sm transition-colors duration-150 hover:text-purple-600 dark:hover:text-purple-300" href="{{ route('sub_kriteria') }}">
-                    <i class="ri-collage-line text-lg"></i>
-                    <span class="ml-4">Sub Kriteria</span>
+                    <span class="ml-4">Perbandingan Kriteria</span>
                 </a>
             </li>
 

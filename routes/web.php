@@ -71,32 +71,6 @@ Route::group([
     });
 
     Route::group([
-        'prefix' => 'kategori'
-    ], function () {
-        Route::get('/', [KategoriController::class, 'index'])->name('kategori');
-        Route::post('/simpan', [KategoriController::class, 'simpan'])->name('kategori.simpan');
-        Route::get('/ubah', [KategoriController::class, 'ubah'])->name('kategori.ubah');
-        Route::post('/ubah', [KategoriController::class, 'perbarui'])->name('kategori.perbarui');
-        Route::post('/hapus', [KategoriController::class, 'hapus'])->name('kategori.hapus');
-        Route::post('/import', [KategoriController::class, 'import'])->name('kategori.import');
-    });
-
-    Route::group([
-        'prefix' => 'sub_kriteria'
-    ], function () {
-        Route::get('/', [SubKriteriaController::class, 'index'])->name('sub_kriteria');
-        Route::post('/simpan', [SubKriteriaController::class, 'simpan'])->name('sub_kriteria.simpan');
-        Route::get('/ubah', [SubKriteriaController::class, 'ubah'])->name('sub_kriteria.ubah');
-        Route::post('/ubah', [SubKriteriaController::class, 'perbarui'])->name('sub_kriteria.perbarui');
-        Route::post('/hapus', [SubKriteriaController::class, 'hapus'])->name('sub_kriteria.hapus');
-
-        Route::get('/perhitungan_kriteria/{kriteria_id}', [AHPController::class, 'index_perhitungan_kriteria'])->name('perhitungan_kriteria.ubah');
-        Route::get('/matriks_perbandingan/{kriteria_id}/{kategori_id}', [AHPController::class, 'ubah_matriks_perbandingan_kriteria'])->name('matriks_perbandingan_kriteria.ubah');
-        Route::post('/matriks_perbandingan/{kriteria_id}', [AHPController::class, 'matriks_perbandingan_kriteria'])->name('matriks_perbandingan_kriteria.hitung');
-        Route::post('/matriks_kriteria/{kriteria_id}', [AHPController::class, 'matriks_kriteria'])->name('matriks_kriteria.hitung');
-    });
-
-    Route::group([
         'prefix' => 'alternatif'
     ], function () {
         Route::get('/', [AlternatifController::class, 'index'])->name('alternatif');

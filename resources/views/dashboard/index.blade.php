@@ -22,34 +22,7 @@
                     </p>
                 </div>
             </div>
-            <!-- Card -->
-            <div class="shadow-xs flex items-center rounded-lg bg-white p-4 dark:bg-gray-800">
-                <div class="mr-4 rounded-full bg-blue-100 p-3 text-blue-500 dark:bg-blue-500 dark:text-blue-100">
-                    <i class="ri-layout-3-fill text-xl"></i>
-                </div>
-                <div>
-                    <p class="mb-2 text-sm font-medium text-gray-600 dark:text-gray-400">
-                        Kategori
-                    </p>
-                    <p class="text-lg font-semibold text-gray-700 dark:text-gray-200">
-                        {{ $kategori }}
-                    </p>
-                </div>
-            </div>
-            <!-- Card -->
-            <div class="shadow-xs flex items-center rounded-lg bg-white p-4 dark:bg-gray-800">
-                <div class="mr-4 rounded-full bg-green-100 p-3 text-green-500 dark:bg-green-500 dark:text-green-100">
-                    <i class="ri-collage-fill text-xl"></i>
-                </div>
-                <div>
-                    <p class="mb-2 text-sm font-medium text-gray-600 dark:text-gray-400">
-                        Sub Kriteria
-                    </p>
-                    <p class="text-lg font-semibold text-gray-700 dark:text-gray-200">
-                        {{ $subKriteria }}
-                    </p>
-                </div>
-            </div>
+
             <!-- Card -->
             <div class="shadow-xs flex items-center rounded-lg bg-white p-4 dark:bg-gray-800">
                 <div class="mr-4 rounded-full bg-teal-100 p-3 text-teal-500 dark:bg-teal-500 dark:text-teal-100">

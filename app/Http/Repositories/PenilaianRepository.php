@@ -47,9 +47,7 @@ class PenilaianRepository
     public function perbarui($request)
     {
         foreach ($this->penilaian->where('alternatif_id', $request->alternatif_id)->get() as $item) {
-            $this->penilaian->where('alternatif_id', $request->alternatif_id)->where('kriteria_id', $item->kriteria_id)->update([
-                'sub_kriteria_id' => $request[$item->kriteria_id],
-            ]);
+            $this->penilaian->where('alternatif_id', $request->alternatif_id);
         }
         return true;
     }

@@ -22,13 +22,8 @@ class SubKriteriaController extends Controller
 
     public function index()
     {
-        if ($this->kategoriService->getAll()->count() < 3) {
-            return redirect('dashboard/kategori')->with('gagal', "Kategori harus lebih dari sama dengan 3!");
-        }
-
         $judul = "Sub Kriteria";
         $kriteria = $this->kriteriaService->getAll();
-        $kategori = $this->kategoriService->getAll();
         $subKriteria = $this->subKriteriaService->getAll();
 
         $data = null;
@@ -45,7 +40,6 @@ class SubKriteriaController extends Controller
         return view('dashboard.sub_kriteria.index', [
             "judul" => $judul,
             "data" => $data,
-            "kategori" => $kategori,
             "subKriteria" => $subKriteria,
         ]);
     }

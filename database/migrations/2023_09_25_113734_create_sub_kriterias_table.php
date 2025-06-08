@@ -17,7 +17,6 @@ return new class extends Migration
             $table->id();
             $table->string('nama');
             $table->foreignId("kriteria_id")->constrained("kriteria", "id");
-            $table->foreignId("kategori_id")->constrained("kategori", "id");
             $table->timestamps();
         });
     }
