@@ -2,13 +2,12 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AHPController;
+use App\Http\Controllers\UserController;
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\KategoriController;
 use App\Http\Controllers\KriteriaController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PenilaianController;
 use App\Http\Controllers\AlternatifController;
-use App\Http\Controllers\SubKriteriaController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 
@@ -40,7 +39,7 @@ Route::middleware('auth')->group(function () {
 Route::group([
     'middleware' => 'guest'
 
-], function() {
+], function () {
     Route::get('/', [AuthenticatedSessionController::class, 'create']);
     Route::get('/login', [AuthenticatedSessionController::class, 'create']);
     Route::get('/register', [RegisteredUserController::class, 'create']);
@@ -50,7 +49,7 @@ Route::group([
     'middleware' => ['auth', 'verified'],
     'prefix' => 'dashboard',
 
-], function() {
+], function () {
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/profil', [DashboardController::class, 'profile'])->name('profile');
 
@@ -93,10 +92,20 @@ Route::group([
     });
 
     Route::group([
+        'prefix' => 'user'
+    ], function () {
+        Route::get('/', [UserController::class, 'index'])->name('user');
+        Route::post('/simpan', [UserController::class, 'simpan'])->name('user.simpan');
+        Route::get('/ubah', [UserController::class, 'ubah'])->name('user.ubah');
+        Route::post('/ubah', [UserController::class, 'perbarui'])->name('user.perbarui');
+        Route::post('/hapus', [UserController::class, 'hapus'])->name('user.hapus');
+    });
+
+    Route::group([
         'prefix' => 'hasil_akhir'
     ], function () {
         Route::get('/', [PenilaianController::class, 'hasil_akhir'])->name('penilaian.hasil_akhir');
     });
 });
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';

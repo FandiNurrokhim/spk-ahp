@@ -1,19 +1,10 @@
 <header class="z-10 py-4 bg-white shadow-md dark:bg-gray-800">
-    <div class="container flex items-center justify-between h-full px-6 mx-auto text-purple-600 dark:text-purple-300">
+    <div class="container flex items-center justify-end h-full px-6 mx-auto text-purple-600 dark:text-purple-300">
         <!-- Mobile hamburger -->
         <button class="p-1 mr-5 -ml-1 rounded-md md:hidden focus:outline-none focus:shadow-outline-purple" @click="toggleSideMenu" aria-label="Menu">
             <i class="ri-bar-chart-horizontal-fill text-xl"></i>
         </button>
 
-        <!-- Search input -->
-        <div class="flex justify-center flex-1 lg:mr-32">
-            <div class="relative w-full max-w-xl mr-6 focus-within:text-purple-500">
-                <div class="absolute inset-y-0 flex items-center pl-2">
-                    <i class="ri-search-line text-base"></i>
-                </div>
-                <input class="w-full pl-8 pr-2 text-sm text-gray-700 placeholder-gray-600 bg-gray-100 border-0 rounded-md dark:placeholder-gray-500 dark:focus:shadow-outline-gray dark:focus:placeholder-gray-600 dark:bg-gray-700 dark:text-gray-200 focus:placeholder-gray-500 focus:bg-white focus:border-purple-300 focus:outline-none focus:shadow-outline-purple form-input" type="text" placeholder="Search" aria-label="Search" />
-            </div>
-        </div>
         <ul class="flex items-center flex-shrink-0 space-x-6">
             <!-- Dark Mode Switcher -->
             <li class="flex justify-center items-center">
@@ -68,19 +59,13 @@
             <li class="relative">
                 <div class="dropdown dropdown-end">
                     <label tabindex="0" class="btn btn-ghost btn-circle hover:bg-transparent m-1">
-                        <img class="object-cover w-8 h-8 rounded-full" src="{{ asset('img/logo.jpg') }}" alt="" aria-hidden="true" />
+                        <img class="object-cover w-8 h-8 rounded-full" src="{{ asset('img/Logo Man.jpg') }}" alt="" aria-hidden="true" />
                     </label>
                     <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52">
                         <li class="flex">
                             <a class="inline-flex items-center w-full px-2 py-1 text-sm font-semibold transition-colors duration-150 rounded-md hover:bg-gray-100 hover:text-gray-800 dark:hover:bg-gray-800 dark:hover:text-gray-200" href="{{ route('profile') }}">
                                 <i class="ri-user-line text-base mr-3 text-purple-600 dark:text-purple-300"></i>
                                 <span class="text-gray-800">Profile</span>
-                            </a>
-                        </li>
-                        <li class="flex">
-                            <a class="inline-flex items-center w-full px-2 py-1 text-sm font-semibold transition-colors duration-150 rounded-md hover:bg-gray-100 hover:text-gray-800 dark:hover:bg-gray-800 dark:hover:text-gray-200" href="#">
-                                <i class="ri-settings-3-line text-base mr-3 text-purple-600 dark:text-purple-300"></i>
-                                <span class="text-gray-800">Settings</span>
                             </a>
                         </li>
                         <li class="flex">

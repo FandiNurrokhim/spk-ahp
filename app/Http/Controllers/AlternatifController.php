@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use App\Http\Requests\AlternatifRequest;
 use App\Http\Services\AlternatifService;
 
@@ -25,11 +26,21 @@ class AlternatifController extends Controller
 
     public function simpan(AlternatifRequest $request)
     {
-        $data = $this->alternatifService->simpanPostData($request);
-        if (!$data[0]) {
-            return redirect('dashboard/alternatif')->with('gagal', $data[1]);
+        DB::beginTransaction();
+        try {
+            $data = $this->alternatifService->simpanPostData($request);
+    
+            if (!$data[0]) {
+                DB::rollBack();
+                return redirect('dashboard/alternatif')->with('gagal', $data[1]);
+            }
+    
+            DB::commit();
+            return redirect('dashboard/alternatif')->with('berhasil', "Data berhasil disimpan!");
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect('dashboard/alternatif')->with('gagal', 'Terjadi kesalahan: ' . $e->getMessage());
         }
-        return redirect('dashboard/alternatif')->with('berhasil', "Data berhasil disimpan!");
     }
 
     public function ubah(Request $request)
@@ -40,11 +51,19 @@ class AlternatifController extends Controller
 
     public function perbarui(AlternatifRequest $request)
     {
-        $data = $this->alternatifService->perbaruiPostData($request);
-        if (!$data[0]) {
-            return redirect('dashboard/alternatif')->with('gagal', $data[1]);
+        DB::beginTransaction();
+        try {
+            $data = $this->alternatifService->perbaruiPostData($request);
+            if (!$data[0]) {
+                DB::rollBack();
+                return redirect('dashboard/alternatif')->with('gagal', $data[1]);
+            }
+            DB::commit();
+            return redirect('dashboard/alternatif')->with('berhasil', "Data berhasil diperbarui!");
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect('dashboard/alternatif')->with('gagal', 'Terjadi kesalahan: ' . $e->getMessage());
         }
-        return redirect('dashboard/alternatif')->with('berhasil', "Data berhasil diperbarui!");
     }
 
     public function hapus(Request $request)

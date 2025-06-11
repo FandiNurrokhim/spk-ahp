@@ -17,16 +17,10 @@ class Penilaian extends Model
     protected $fillable = [
         "alternatif_id",
         "kriteria_id",
-        "sub_kriteria_id",
     ];
 
     public function alternatif()
     {
         return $this->belongsTo(Alternatif::class);
-    }
-
-    public function subKriteria()
-    {
-        return $this->belongsTo(SubKriteria::class);
     }
 }

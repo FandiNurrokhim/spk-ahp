@@ -9,18 +9,15 @@ use Illuminate\Support\Facades\DB;
 use App\Http\Services\KategoriService;
 use App\Http\Services\KriteriaService;
 use App\Http\Services\PenilaianService;
-use App\Http\Services\SubKriteriaService;
 
 class PenilaianController extends Controller
 {
-    protected $penilaianService, $kriteriaService, $subKriteriaService, $kategoriService;
+    protected $penilaianService, $kriteriaService;
 
-    public function __construct(PenilaianService $penilaianService, KriteriaService $kriteriaService, SubKriteriaService $subKriteriaService, KategoriService $kategoriService)
+    public function __construct(PenilaianService $penilaianService, KriteriaService $kriteriaService)
     {
         $this->penilaianService = $penilaianService;
         $this->kriteriaService = $kriteriaService;
-        $this->subKriteriaService = $subKriteriaService;
-        $this->kategoriService = $kategoriService;
     }
 
     public function index()
@@ -128,9 +125,22 @@ class PenilaianController extends Controller
             ->select('hsa.*', 'a.nama as nama_alternatif')
             ->orderBy('hsa.nilai', 'desc')
             ->get();
+
+        $hasilSolusi = DB::table('hasil_solusi_ahp as hsa')
+            ->join('alternatif as a', 'a.id', '=', 'hsa.alternatif_id')
+            ->select('hsa.*', 'a.nama as nama_alternatif')
+            ->get();
+
+        $hasilNilaiData = '';
+        foreach ($hasilSolusi as $item) {
+            $hasilNilaiData .= number_format($item->nilai, 3) . ", ";
+        }
+        $hasilNilaiData = rtrim($hasilNilaiData, ", ");
         return view('dashboard.penilaian.hasil', [
             'judul' => $judul,
             'hasil' => $hasil,
+            'hasilNilaiData' => $hasilNilaiData,
+            'hasilSolusi' => $hasilSolusi
         ]);
     }
 
@@ -138,22 +148,22 @@ class PenilaianController extends Controller
     {
         $judul = 'Laporan Hasil AHP';
         $kriteria = $this->kriteriaService->getAll();
-    
+
         $matriksNilaiKriteria = DB::table('matriks_nilai_prioritas_utama as mnu')
             ->join('kriteria as k', 'k.id', '=', 'mnu.kriteria_id')
             ->select('mnu.*', 'k.id as kriteria_id', 'k.nama as nama_kriteria')
             ->get();
-    
+
         if ($matriksNilaiKriteria->where('kriteria_id', $kriteria->last()->id)->first() == null) {
             return redirect('dashboard/kriteria/perhitungan_utama')->with('gagal', 'Perhitungan Kriteria Utama belum tuntas!');
         }
-    
+
         $data = $this->penilaianService->getAll();
         $hasil = DB::table('hasil_solusi_ahp as hsa')
             ->join('alternatif as a', 'a.id', '=', 'hsa.alternatif_id')
             ->select('hsa.*', 'a.nama as nama_alternatif')
             ->get();
-    
+
         $pdf = PDF::setOptions(['defaultFont' => 'sans-serif'])->loadview('dashboard.pdf.penilaian', [
             'judul' => $judul,
             'data' => $data,
@@ -161,7 +171,7 @@ class PenilaianController extends Controller
             'matriksNilaiKriteria' => $matriksNilaiKriteria,
             'hasil' => $hasil,
         ]);
-    
+
         // return $pdf->download('laporan-penilaian.pdf');
         return $pdf->stream();
     }

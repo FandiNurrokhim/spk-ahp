@@ -23,8 +23,13 @@ class AlternatifRequest extends FormRequest
      */
     public function rules()
     {
+        $id = $this->id ?? null;
         return [
-            "nama" => "required|string|max:255",
+            'nama' => 'required|string|max:255',
+            'nisn' => 'required|string|max:20|unique:alternatif,nisn,' . $id,
+            'jenis_kelamin' => 'required|in:Laki-laki,Perempuan',
+            'tanggal_lahir' => 'required|date_format:Y-m-d',
+            'alamat' => 'required|string|max:255',
         ];
     }
 }

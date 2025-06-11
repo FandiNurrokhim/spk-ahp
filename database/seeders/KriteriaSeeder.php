@@ -117,7 +117,6 @@ class KriteriaSeeder extends Seeder
                     DB::table('penilaian')->insert([
                         'alternatif_id' => $item->id,
                         'kriteria_id' => $value->id,
-                        'sub_kriteria_id' => null,
                         'created_at' => Carbon::now(),
                         'updated_at' => Carbon::now(),
                     ]);

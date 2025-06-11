@@ -38,16 +38,20 @@
                                                 @else
                                                     <select name="{{ $item->kriteria_id_banding }}"
                                                         class="select select-bordered w-full" required>
+                                                        <option value=""
+                                                            {{ is_null($item->nilai) || floatval($item->nilai) == 0.0 ? 'selected' : '' }}>
+                                                            -- Pilih Nilai --
+                                                        </option>
                                                         @php
                                                             $nilaiOptions = [
-                                                                0.111 => '1/9 - Kebalikan dari nilai 9',
-                                                                0.125 => '1/8 - Kebalikan dari nilai 8',
-                                                                0.142 => '1/7 - Kebalikan dari nilai 7',
-                                                                0.166 => '1/6 - Kebalikan dari nilai 6',
-                                                                0.2 => '1/5 - Kebalikan dari nilai 5',
-                                                                0.25 => '1/4 - Kebalikan dari nilai 4',
-                                                                0.333 => '1/3 - Kebalikan dari nilai 3',
-                                                                0.5 => '1/2 - Kebalikan dari nilai 2',
+                                                                "0.111" => '1/9 - Kebalikan dari nilai 9',
+                                                                "0.125" => '1/8 - Kebalikan dari nilai 8',
+                                                                "0.142" => '1/7 - Kebalikan dari nilai 7',
+                                                                "0.166" => '1/6 - Kebalikan dari nilai 6',
+                                                                "0.2" => '1/5 - Kebalikan dari nilai 5',
+                                                                "0.25" => '1/4 - Kebalikan dari nilai 4',
+                                                                "0.333" => '1/3 - Kebalikan dari nilai 3',
+                                                                "0.5" => '1/2 - Kebalikan dari nilai 2',
                                                                 1 => '1 - Sama penting',
                                                                 2 => '2 - Nilai antara sama dan sedikit lebih penting',
                                                                 3 => '3 - Sedikit lebih penting',
@@ -60,8 +64,7 @@
                                                             ];
                                                         @endphp
                                                         @foreach ($nilaiOptions as $nilai => $label)
-                                                            <option value="{{ $nilai }}"
-                                                                {{ floatval($item->nilai) === floatval($nilai) ? 'selected' : '' }}>
+                                                            <option value={{ $nilai }}>
                                                                 {{ $label }}
                                                             </option>
                                                         @endforeach

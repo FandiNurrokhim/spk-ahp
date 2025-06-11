@@ -18,9 +18,4 @@ class Kriteria extends Model
         "kode",
         "nama",
     ];
-
-    public function subKriteria()
-    {
-        return $this->hasMany(SubKriteria::class);
-    }
 }

@@ -6,10 +6,8 @@ use Carbon\Carbon;
 use App\Models\Kriteria;
 use App\Models\Penilaian;
 use App\Models\Alternatif;
-use App\Models\SubKriteria;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
 class AlternatifSeeder extends Seeder
 {
@@ -30,6 +28,10 @@ class AlternatifSeeder extends Seeder
         foreach ($namaAlternatif as $nama) {
             Alternatif::create([
                 'nama' => $nama,
+                'nisn' => rand(1000000000, 9999999999),
+                'tanggal_lahir' => now()->subYears(rand(15, 20))->format('Y-m-d'),
+                'jenis_kelamin' => rand(0, 1) ? 'Laki-laki' : 'Perempuan',
+                'alamat' => 'Alamat ' . $nama,
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);

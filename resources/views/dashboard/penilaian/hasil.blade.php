@@ -10,14 +10,34 @@
     <div>
         <section class="mt-3">
             <div class="mx-auto max-w-screen-xl px-4 lg:px-12">
+
+                {{-- Chart --}}
+                <div class="mb-8 grid gap-6">
+                    <div class="shadow-xs min-w-0 rounded-lg bg-white p-4 dark:bg-gray-800">
+                        <h4 class="mb-4 font-semibold text-gray-800 dark:text-gray-300">
+                            Hasil Perhitungan AHP Alternatif
+                        </h4>
+                        <canvas id="line-hasil"></canvas>
+                        <div class="mt-4 flex justify-center space-x-3 text-sm text-gray-600 dark:text-gray-400">
+                            <!-- Chart legend -->
+                            <div class="flex items-center">
+                                <span class="mr-1 inline-block h-3 w-3 rounded-full bg-[#0694a2]"></span>
+                                <span>Alternatif</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="mb-7 bg-white dark:bg-gray-800 relative shadow-md sm:rounded-lg overflow-hidden">
                     <div class="flex justify-between items-center d p-4 mb-5">
                         <div class="flex space-x-3">
                             <div class="flex space-x-3 items-center">
                                 <h2 class="text-xl font-bold text-gray-800 dark:text-gray-200">Hasil Perhitungan</h2>
-                                <form action="{{ route('penilaian.pdf_hasil') }}" method="post" enctype="multipart/form-data" target="_blank">
+                                <form action="{{ route('penilaian.pdf_hasil') }}" method="post"
+                                    enctype="multipart/form-data" target="_blank">
                                     @csrf
-                                    <button type="submit" class="btn btn-sm text-white dark:text-gray-800 normal-case bg-rose-600 hover:bg-rose-600 hover:bg-opacity-70 hover:border-opacity-70 dark:bg-rose-300 dark:hover:bg-rose-300 dark:hover:bg-opacity-90 dark:border-rose-300">
+                                    <button type="submit"
+                                        class="btn btn-sm text-white dark:text-gray-800 normal-case bg-rose-600 hover:bg-rose-600 hover:bg-opacity-70 hover:border-opacity-70 dark:bg-rose-300 dark:hover:bg-rose-300 dark:hover:bg-opacity-90 dark:border-rose-300">
                                         <i class="ri-file-pdf-line"></i>
                                         Export PDF
                                     </button>
@@ -26,11 +46,14 @@
                         </div>
                     </div>
                     <div class="overflow-x-auto p-3">
-                        <table id="tabel_data_hasil" class="nowrap w-full text-sm text-left text-gray-500 dark:text-gray-400 stripe hover" style="width:100%; padding-top: 1em; padding-bottom: 1em;">
+                        <table id="tabel_data_hasil"
+                            class="nowrap w-full text-sm text-left text-gray-500 dark:text-gray-400 stripe hover"
+                            style="width:100%; padding-top: 1em; padding-bottom: 1em;">
                             <thead class="text-xs text-gray-700 uppercase bg-gray-50">
                                 <tr>
                                     <th scope="col" class="px-4 py-3">Alternatif</th>
                                     <th scope="col" class="px-4 py-3">Nilai</th>
+                                    <th scope="col" class="px-4 py-3">Status</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -42,6 +65,12 @@
                                         <td class="px-4 py-3 text-gray-700 dark:text-gray-400 uppercase font-semibold">
                                             {{ round($item->nilai, 3) }}
                                         </td>
+                                        <td class="px-4 py-3 text-gray-700 dark:text-gray-400 uppercase font-semibold">
+                                            @if ($item->nilai > 85)
+                                                <span
+                                                    class="badge bg-green-500 text-white font-bold">Direkomendasikan</span>
+                                            @endif
+                                        </td>
                                     </tr>
                                 @endforeach
                             </tbody>
@@ -52,27 +81,25 @@
         </section>
     </div>
 @endsection
-
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 @section('js')
     <script>
         $(document).ready(function() {
             $('#tabel_data_hasil').DataTable({
-                scrollX: true,
-                ordering: false,
-            })
-            .columns.adjust()
-            .responsive.recalc();
+                    scrollX: true,
+                    ordering: false,
+                })
+                .columns.adjust()
+                .responsive.recalc();
         });
 
         @if (session()->has('berhasil'))
             Swal.fire({
                 title: 'Berhasil',
                 @if (session('berhasil')[1] == 0)
-                    html:
-                        "<p>{{ session('berhasil')[0] }}</p>",
+                    html: "<p>{{ session('berhasil')[0] }}</p>",
                 @else
-                    html:
-                        "<p>{{ session('berhasil')[0] }}</p>" +
+                    html: "<p>{{ session('berhasil')[0] }}</p>" +
                         "<div class='divider'></div>" +
                         "<b>Alternatif: {{ session('berhasil')[1] }} </b>",
                 @endif
@@ -95,11 +122,68 @@
         @if ($errors->any())
             Swal.fire({
                 title: 'Gagal',
-                text: @foreach ($errors->all() as $error) '{{ $error }}' @endforeach,
+                text: @foreach ($errors->all() as $error)
+                    '{{ $error }}'
+                @endforeach ,
                 icon: 'error',
                 confirmButtonColor: '#6419E6',
                 confirmButtonText: 'OK',
             })
         @endif
+    </script>
+
+    <script>
+        let hasilSolusiData = [];
+        @foreach ($hasilSolusi as $item)
+            hasilSolusiData.push(' {{ $item->nama_alternatif }} ');
+        @endforeach
+
+        const lineConfig = {
+            type: 'line',
+            data: {
+                labels: hasilSolusiData,
+                datasets: [{
+                    label: 'Nilai',
+                    backgroundColor: '#0694a2',
+                    borderColor: '#0694a2',
+                    data: [{{ $hasilNilaiData }}],
+                    fill: false,
+                }, ],
+            },
+            options: {
+                responsive: true,
+                legend: {
+                    display: false,
+                },
+                tooltips: {
+                    mode: 'index',
+                    intersect: false,
+                },
+                hover: {
+                    mode: 'nearest',
+                    intersect: true,
+                },
+                scales: {
+                    x: {
+                        display: true,
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'Alternatif',
+                        },
+                    },
+                    y: {
+                        display: true,
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'Value',
+                        },
+                    },
+                },
+            },
+        }
+
+        // change this to the id of your chart element in HMTL
+        const lineCtx = document.getElementById('line-hasil')
+        window.myLine = new Chart(lineCtx, lineConfig)
     </script>
 @endsection

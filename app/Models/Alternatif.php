@@ -16,5 +16,9 @@ class Alternatif extends Model
     public $timestamps = "true";
     protected $fillable = [
         "nama",
+        "nisn",
+        "tanggal_lahir",
+        "jenis_kelamin",
+        "alamat",
     ];
 }

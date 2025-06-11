@@ -64,7 +64,6 @@ class AlternatifRepository
                     DB::table('penilaian')->insert([
                         'alternatif_id' => $item->id,
                         'kriteria_id' => $value->id,
-                        'sub_kriteria_id' => null,
                         'created_at' => Carbon::now(),
                         'updated_at' => Carbon::now(),
                     ]);
@@ -83,6 +82,10 @@ class AlternatifRepository
     {
         $data = $this->alternatif->where('id', $id)->update([
             "nama" => $data['nama'],
+            'nisn' => $data['nisn'],
+            'tanggal_lahir' => $data['tanggal_lahir'],
+            'jenis_kelamin' => $data['jenis_kelamin'],
+            'alamat' => $data['alamat'],
         ]);
         return $data;
     }

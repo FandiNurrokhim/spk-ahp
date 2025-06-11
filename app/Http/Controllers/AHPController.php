@@ -5,18 +5,15 @@ namespace App\Http\Controllers;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use App\Http\Services\KategoriService;
 use App\Http\Services\KriteriaService;
-use App\Http\Services\SubKriteriaService;
 
 class AHPController extends Controller
 {
-    protected $kriteriaService, $kategoriService, $subKriteriaService;
+    protected $kriteriaService, $kategoriService;
 
-    public function __construct(KriteriaService $kriteriaService, SubKriteriaService $subKriteriaService)
+    public function __construct(KriteriaService $kriteriaService)
     {
         $this->kriteriaService = $kriteriaService;
-        $this->subKriteriaService = $subKriteriaService;
     }
 
     public function index_perhitungan_utama()
@@ -70,13 +67,14 @@ class AHPController extends Controller
             ->select('mpu.*', 'k.id as kriteria_id', 'k.nama as nama_kriteria')
             ->get();
 
-        foreach ($this->kriteriaService->getAll() as $value => $item) {
-            if ($matriksPerbandingan[$value]->kriteria_id_banding == $item->id) {
-                $matriksPerbandingan[$value]->nama_kriteria_banding = $item->nama;
+        foreach ($matriksPerbandingan as $mp) {
+            foreach ($this->kriteriaService->getAll() as $kriteria) {
+                if ($mp->kriteria_id_banding == $kriteria->id) {
+                    $mp->nama_kriteria_banding = $kriteria->nama;
+                    break;
+                }
             }
         }
-
-        // dd($matriksPerbandingan);
 
         return view('dashboard.perhitungan_utama.ubahMatriksPerbandingan', [
             'judul' => $judul,
@@ -95,7 +93,6 @@ class AHPController extends Controller
 
     public function matriks_perbandingan_utama(Request $request)
     {
-
         foreach ($this->kriteriaService->getAll() as $value => $item) {
             $nilai = $request->post()[$item->id];
 

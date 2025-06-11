@@ -6,7 +6,6 @@ use App\Imports\KriteriaImport;
 use Carbon\Carbon;
 use App\Models\Kriteria;
 use App\Models\Alternatif;
-use App\Models\SubKriteria;
 use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel;
 
@@ -34,11 +33,44 @@ class KriteriaRepository
     public function simpan($data)
     {
         $data = $this->kriteria->create($data);
-        DB::table('matriks_perbandingan_utama')->truncate();
-        $this->add_matriks_perbandingan();
+        // DB::table('matriks_perbandingan_utama')->truncate(); // Dihapus/komentari agar tidak reset
+        $this->add_matriks_perbandingan_baru($data); // Tambahkan hanya perbandingan baru
         $this->add_penilaian_alternatif();
 
         return $data;
+    }
+
+    // Tambahkan fungsi baru untuk menambah perbandingan hanya untuk kriteria baru
+    public function add_matriks_perbandingan_baru($kriteriaBaru)
+    {
+        $kriteriaLain = $this->kriteria->where('id', '!=', $kriteriaBaru->id)->get();
+
+        // Perbandingan kriteria baru dengan dirinya sendiri
+        DB::table('matriks_perbandingan_utama')->insert([
+            'nilai' => 1,
+            'kriteria_id' => $kriteriaBaru->id,
+            'kriteria_id_banding' => $kriteriaBaru->id,
+            'created_at' => Carbon::now(),
+            'updated_at' => Carbon::now(),
+        ]);
+
+        // Perbandingan kriteria baru dengan kriteria lain
+        foreach ($kriteriaLain as $kriteria) {
+            DB::table('matriks_perbandingan_utama')->insert([
+                'nilai' => null,
+                'kriteria_id' => $kriteriaBaru->id,
+                'kriteria_id_banding' => $kriteria->id,
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now(),
+            ]);
+            DB::table('matriks_perbandingan_utama')->insert([
+                'nilai' => null,
+                'kriteria_id' => $kriteria->id,
+                'kriteria_id_banding' => $kriteriaBaru->id,
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now(),
+            ]);
+        }
     }
 
     public function import($data)
@@ -69,7 +101,6 @@ class KriteriaRepository
                         'created_at' => Carbon::now(),
                         'updated_at' => Carbon::now(),
                     ]);
-
                 } else {
                     DB::table('matriks_perbandingan_utama')->insert([
                         'nilai' => null,
@@ -94,7 +125,6 @@ class KriteriaRepository
                     DB::table('penilaian')->insert([
                         'alternatif_id' => $item->id,
                         'kriteria_id' => $value->id,
-                        'sub_kriteria_id' => null,
                         'created_at' => Carbon::now(),
                         'updated_at' => Carbon::now(),
                     ]);
@@ -120,22 +150,7 @@ class KriteriaRepository
 
     public function hapus($id)
     {
-        DB::table('matriks_penjumlahan_prioritas_kriteria')->where('kriteria_id', $id)->delete();
-        DB::table('matriks_penjumlahan_kriteria')->where('kriteria_id', $id)->delete();
-        DB::table('matriks_nilai_prioritas_kriteria')->where('kriteria_id', $id)->delete();
-        DB::table('matriks_nilai_kriteria')->where('kriteria_id', $id)->delete();
-        DB::table('matriks_perbandingan_kriteria')->where('kriteria_id', $id)->delete();
-
-        DB::table('matriks_penjumlahan_prioritas_utama')->where('kriteria_id', $id)->delete();
-        DB::table('matriks_penjumlahan_utama')->where('kriteria_id', $id)->orWhere('kriteria_id_banding', $id)->delete();
-        DB::table('matriks_nilai_prioritas_utama')->where('kriteria_id', $id)->delete();
-        DB::table('matriks_nilai_utama')->where('kriteria_id', $id)->orWhere('kriteria_id_banding', $id)->delete();
-        DB::table('matriks_perbandingan_utama')->where('kriteria_id', $id)->orWhere('kriteria_id_banding', $id)->delete();
-
-        DB::table('penilaian')->where('kriteria_id', $id)->delete();
-
         $data = [
-            SubKriteria::where('kriteria_id', $id)->delete(),
             $this->kriteria->where('id', $id)->delete(),
         ];
         return $data;

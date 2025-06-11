@@ -1,6 +1,6 @@
-@extends("dashboard.pdf.layouts.app")
+@extends('dashboard.pdf.layouts.app')
 
-@section("container")
+@section('container')
     <div class="container mx-auto grid px-6">
         <h2 class="judul-laporan my-6 text-2xl font-semibold text-gray-700 dark:text-gray-200">
             {{ $judul }}
@@ -18,11 +18,14 @@
                     </div>
                 </div>
                 <div class="overflow-x-auto p-3">
-                    <table id="tabel_data_hasil" class="nowrap w-full text-sm text-left text-gray-500 dark:text-gray-400 stripe hover" style="width:100%; padding-top: 1em; padding-bottom: 1em;">
+                    <table id="tabel_data_hasil"
+                        class="nowrap w-full text-sm text-left text-gray-500 dark:text-gray-400 stripe hover"
+                        style="width:100%; padding-top: 1em; padding-bottom: 1em;">
                         <thead class="text-xs text-gray-700 uppercase bg-gray-50">
                             <tr>
                                 <th scope="col" class="px-4 py-3">Alternatif</th>
                                 <th scope="col" class="px-4 py-3">Nilai</th>
+                                <th scope="col" class="px-4 py-3">Status</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -34,6 +37,14 @@
                                     <td class="px-4 py-3 text-gray-700 dark:text-gray-400 uppercase font-semibold">
                                         {{ round($item->nilai, 3) }}
                                     </td>
+                                    <td class="px-4 py-3 text-gray-700 dark:text-gray-400 uppercase font-semibold">
+                                        @if ($item->nilai > 85)
+                                            <span
+                                                style="display:inline-block; background:#22c55e; color:#fff; font-weight:bold; border-radius:0.25rem; padding:2px 10px; font-size:0.9em;">
+                                                Direkomendasikan
+                                            </span>
+                                        @endif
+                                    </td>
                                 </tr>
                             @endforeach
                         </tbody>
@@ -41,7 +52,10 @@
                 </div>
                 <div>
                     <h2>Simpulan</h2>
-                    <p>Berdasarkan tabel dari penilaian perhitungan AHP yang dapat dijadikan rekomendasi alternatif, maka didapatkan alternatif dengan nilai tertinggi yaitu: <span style="font-weight: bold;">{{ $hasil->first()->nama_alternatif }}</span> dengan nilai <span style="font-weight: bold;">{{ round($hasil->first()->nilai, 3) }}</span></p>
+                    <p>Berdasarkan tabel dari penilaian perhitungan AHP yang dapat dijadikan rekomendasi alternatif, maka
+                        didapatkan alternatif dengan nilai tertinggi yaitu: <span
+                            style="font-weight: bold;">{{ $hasil->first()->nama_alternatif }}</span> dengan nilai <span
+                            style="font-weight: bold;">{{ round($hasil->first()->nilai, 3) }}</span></p>
                 </div>
             </div>
         </div>

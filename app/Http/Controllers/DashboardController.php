@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\Alternatif;
 use App\Models\Kategori;
 use App\Models\Kriteria;
-use App\Models\SubKriteria;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -17,7 +16,6 @@ class DashboardController extends Controller
 
         $kriteria = Kriteria::get();
         $kategori = Kategori::get()->count();
-        $subKriteria = SubKriteria::get()->count();
         $alternatif = Alternatif::get();
 
         $hasilSolusi = DB::table('hasil_solusi_ahp as hsa')
@@ -31,7 +29,7 @@ class DashboardController extends Controller
         }
         $hasilNilaiData = rtrim($hasilNilaiData, ", ");
 
-        return view('dashboard.index', compact('judul', 'kriteria', 'kategori', 'subKriteria', 'alternatif', 'hasilSolusi', 'hasilNilaiData'));
+        return view('dashboard.index', compact('judul', 'kriteria', 'kategori', 'alternatif', 'hasilSolusi', 'hasilNilaiData'));
     }
 
     public function profile(Request $request)

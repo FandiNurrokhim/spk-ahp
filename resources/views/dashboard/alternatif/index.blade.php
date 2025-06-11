@@ -34,6 +34,10 @@
                             <thead class="text-xs text-gray-700 uppercase bg-gray-50">
                                 <tr>
                                     <th scope="col" class="px-4 py-3">Nama</th>
+                                    <th scope="col" class="px-4 py-3">NIS/NISN</th>
+                                    <th scope="col" class="px-4 py-3">Tanggal Lahir</th>
+                                    <th scope="col" class="px-4 py-3">Jenis Kelamin</th>
+                                    <th scope="col" class="px-4 py-3">Alamat</th>
                                     <th scope="col" class="px-4 py-3">Aksi</th>
                                 </tr>
                             </thead>
@@ -41,6 +45,10 @@
                                 @foreach ($data as $item)
                                     <tr class="border-b dark:border-gray-700">
                                         <td class="px-4 py-3">{{ $item->nama }}</td>
+                                        <td class="px-4 py-3">{{ $item->nisn }}</td>
+                                        <td class="px-4 py-3">{{ $item->tanggal_lahir }}</td>
+                                        <td class="px-4 py-3">{{ $item->jenis_kelamin }}</td>
+                                        <td class="px-4 py-3">{{ $item->alamat }}</td>
                                         <td class="px-4 py-3">
                                             <label for="edit_button" class="btn btn-sm btn-warning text-white"
                                                 onclick="return edit_button('{{ $item->id }}')">
@@ -79,8 +87,63 @@
                                 @enderror
                             </label>
                         </div>
+                        <div class="form-control w-full max-w-xs">
+                            <label class="label">
+                                <span class="label-text">NIS/NISN</span>
+                            </label>
+                            <input type="text" name="nisn" placeholder="Masukkan NIS/NISN"
+                                class="input input-bordered w-full max-w-xs text-gray-800" value="{{ old('nisn') }}"
+                                required />
+                            <label class="label">
+                                @error('nisn')
+                                    <span class="label-text-alt text-error">{{ $message }}</span>
+                                @enderror
+                            </label>
+                        </div>
+                        <div class="form-control w-full max-w-xs">
+                            <label class="label">
+                                <span class="label-text">Tanggal Lahir</span>
+                            </label>
+                            <input type="date" name="tanggal_lahir"
+                                class="input input-bordered w-full max-w-xs text-gray-800"
+                                value="{{ old('tanggal_lahir') }}" max="{{ date('Y-m-d') }}" required />
+                            <label class="label">
+                                @error('tanggal_lahir')
+                                    <span class="label-text-alt text-error">{{ $message }}</span>
+                                @enderror
+                            </label>
+                        </div>
+                        <div class="form-control w-full max-w-xs">
+                            <label class="label">
+                                <span class="label-text">Jenis Kelamin</span>
+                            </label>
+                            <select name="jenis_kelamin" class="select select-bordered w-full max-w-xs" required>
+                                <option value="">-- Pilih Jenis Kelamin --</option>
+                                <option value="Laki-laki" {{ old('jenis_kelamin') == 'Laki-laki' ? 'selected' : '' }}>
+                                    Laki-laki</option>
+                                <option value="Perempuan" {{ old('jenis_kelamin') == 'Perempuan' ? 'selected' : '' }}>
+                                    Perempuan</option>
+                            </select>
+                            <label class="label">
+                                @error('jenis_kelamin')
+                                    <span class="label-text-alt text-error">{{ $message }}</span>
+                                @enderror
+                            </label>
+                        </div>
+                        <div class="form-control w-full max-w-xs">
+                            <label class="label">
+                                <span class="label-text">Alamat</span>
+                            </label>
+                            <textarea name="alamat" class="textarea textarea-bordered w-full max-w-xs text-gray-800" placeholder="Masukkan alamat"
+                                required>{{ old('alamat') }}</textarea>
+                            <label class="label">
+                                @error('alamat')
+                                    <span class="label-text-alt text-error">{{ $message }}</span>
+                                @enderror
+                            </label>
+                        </div>
                         <div class="modal-action">
-                            <button type="submit" class="bg-green-500 text-white hover:text-dark-800">Simpan</button>
+                            <button type="submit" class="btn btn-success">Simpan</button>
                             <label for="add_button" class="btn">Batal</label>
                         </div>
                     </form>
@@ -92,7 +155,7 @@
             <input type="checkbox" id="edit_button" class="modal-toggle" />
             <div class="modal">
                 <div class="modal-box" id="edit_form">
-                    <form action="{{ route('kriteria.perbarui') }}" method="post" enctype="multipart/form-data">
+                    <form action="{{ route('alternatif.perbarui') }}" method="post" enctype="multipart/form-data">
                         <h3 class="font-bold text-lg">Ubah {{ $judul }}: <span class="text-greenPrimary"
                                 id="title_form"><span class="loading loading-dots loading-md"></span></span></h3>
                         @csrf
@@ -110,6 +173,59 @@
                                 @enderror
                             </label>
                         </div>
+                        <div class="form-control w-full max-w-xs">
+                            <label class="label">
+                                <span class="label-text">NIS/NISN</span>
+                            </label>
+                            <input type="text" name="nisn" placeholder="Masukkan NIS/NISN"
+                                class="input input-bordered w-full text-gray-800" required />
+                            <label class="label">
+                                @error('nisn')
+                                    <span class="label-text-alt text-error">{{ $message }}</span>
+                                @enderror
+                            </label>
+                        </div>
+                        <div class="form-control w-full max-w-xs">
+                            <label class="label">
+                                <span class="label-text">Tanggal Lahir</span>
+                            </label>
+                            <input type="date" name="tanggal_lahir" class="input input-bordered w-full text-gray-800"
+                                max="{{ date('Y-m-d') }}" required />
+                            <label class="label">
+                                @error('tanggal_lahir')
+                                    <span class="label-text-alt text-error">{{ $message }}</span>
+                                @enderror
+                            </label>
+                        </div>
+                        <div class="form-control w-full max-w-xs">
+                            <label class="label">
+                                <span class="label-text">Jenis Kelamin</span>
+                            </label>
+                            <select name="jenis_kelamin" class="select select-bordered w-full" required>
+                                <option value="">-- Pilih Jenis Kelamin --</option>
+                                <option value="Laki-laki" {{ old('jenis_kelamin') == 'Laki-laki' ? 'selected' : '' }}>
+                                    Laki-laki</option>
+                                <option value="Perempuan" {{ old('jenis_kelamin') == 'Perempuan' ? 'selected' : '' }}>
+                                    Perempuan</option>
+                            </select>
+                            <label class="label">
+                                @error('jenis_kelamin')
+                                    <span class="label-text-alt text-error">{{ $message }}</span>
+                                @enderror
+                            </label>
+                        </div>
+                        <div class="form-control w-full max-w-xs">
+                            <label class="label">
+                                <span class="label-text">Alamat</span>
+                            </label>
+                            <textarea name="alamat" class="textarea textarea-bordered w-full text-gray-800" placeholder="Masukkan alamat"
+                                required></textarea>
+                            <label class="label">
+                                @error('alamat')
+                                    <span class="label-text-alt text-error">{{ $message }}</span>
+                                @enderror
+                            </label>
+                        </div>
                         <div class="modal-action">
                             <button type="submit" class="btn btn-success">Perbarui</button>
                             <label for="edit_button" class="btn">Batal</label>
@@ -118,7 +234,6 @@
                 </div>
                 <label class="modal-backdrop" for="edit_button">Close</label>
             </div>
-
             {{-- Import Data --}}
             <input type="checkbox" id="import_button" class="modal-toggle" />
             <div class="modal">
@@ -148,6 +263,19 @@
             </div>
         </section>
     </div>
+
+      @if ($errors->any())
+        <div class="alert alert-error shadow-lg mt-4">
+            <div>
+                <span class="text-red-600 font-bold">Gagal!</span>
+                <ul class="list-disc pl-5">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        </div>
+    @endif
 @endsection
 
 @section('js')
@@ -207,7 +335,6 @@
                     "id": id
                 },
                 success: function(data) {
-                    console.log(data);
                     let items = [];
                     $.each(data, function(key, val) {
                         items.push(val);
@@ -216,6 +343,10 @@
                     $("#title_form").html(`${items[1]}`);
                     $("input[name='id']").val(items[0]);
                     $("input[name='nama']").val(items[1]);
+                    $("input[name='nisn']").val(items[2]);
+                    $("input[name='tanggal_lahir']").val(items[3]);
+                    $("select[name='jenis_kelamin']").val(items[4]);
+                    $("textarea[name='alamat']").val(items[5]);
 
                     // Loading effect end
                     loading = "";
@@ -224,7 +355,7 @@
             });
         }
 
-       window.delete_button = function(id, nama) {
+        window.delete_button = function(id, nama) {
             Swal.fire({
                 title: 'Apakah Anda yakin?',
                 html: "<p>Data tidak dapat dipulihkan kembali!</p>" +
