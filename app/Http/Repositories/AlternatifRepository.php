@@ -40,17 +40,34 @@ class AlternatifRepository
         return $data;
     }
 
+
     public function import($data)
     {
-        // menangkap file excel
-        $file = $data->file('import_data');
-
-        // import data
-        $import = Excel::import(new AlternatifImport, $file);
-
-        $this->add_penilaian_alternatif();
-
-        return $import;
+        try {
+            $file = $data->file('import_data');
+            $import = new AlternatifImport;
+            Excel::import($import, $file);
+    
+            // Jika ada baris gagal, tangani di sini (jika pakai SkipsOnFailure)
+            if (method_exists($import, 'failures') && $import->failures()->isNotEmpty()) {
+                $messages = $import->failures()->map(function($failure) {
+                    return $failure->errors()[0] ?? 'Data tidak valid';
+                })->implode(', ');
+                return [
+                    'success' => false,
+                    'message' => $messages,
+                ];
+            }
+    
+            $this->add_penilaian_alternatif();
+            return ['success' => true];
+        } catch (\Exception $e) {
+            // Exception dari throw di model() akan masuk sini
+            return [
+                'success' => false,
+                'message' => $e->getMessage(),
+            ];
+        }
     }
 
     public function add_penilaian_alternatif()

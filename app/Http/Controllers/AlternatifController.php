@@ -29,12 +29,12 @@ class AlternatifController extends Controller
         DB::beginTransaction();
         try {
             $data = $this->alternatifService->simpanPostData($request);
-    
+
             if (!$data[0]) {
                 DB::rollBack();
                 return redirect('dashboard/alternatif')->with('gagal', $data[1]);
             }
-    
+
             DB::commit();
             return redirect('dashboard/alternatif')->with('berhasil', "Data berhasil disimpan!");
         } catch (\Exception $e) {
@@ -79,9 +79,14 @@ class AlternatifController extends Controller
             'import_data' => 'required|mimes:xls,xlsx'
         ]);
 
-        $this->alternatifService->import($request);
-
-        // alihkan halaman kembali
+        $result = $this->alternatifService->import($request);
+        if (isset($result['success']) && !$result['success']) {
+            // Hilangkan &#039; dari pesan error
+            $message = str_replace("&#039;", "'", $result['message']);
+            $message = str_replace("'", "", $message); 
+            return redirect('dashboard/alternatif')->with('gagal', $message);
+        }
+        // Jika sukses
         return redirect('dashboard/alternatif')->with('berhasil', "Data berhasil di import!");
     }
 }

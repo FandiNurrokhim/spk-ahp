@@ -24,6 +24,11 @@
                                     <i class="ri-file-excel-line"></i>
                                     Import Data
                                 </label>
+                                <a href="{{asset('template/Template Kriteria.xlsx')}}"
+                                    class="btn btn-sm text-white dark:text-gray-800 normal-case bg-blue-600 hover:bg-blue-600 hover:bg-opacity-70 hover:border-opacity-70 dark:bg-blue-300 dark:hover:bg-blue-300 dark:hover:bg-opacity-90 dark:border-blue-300">
+                                    <i class="ri-file-download-line"></i>
+                                    Unduh Template Excel
+                                </a>
                             </div>
                         </div>
                     </div>
@@ -159,7 +164,7 @@
                                 <span class="label-text">Import File</span>
                             </label>
                             <input type="file" name="import_data"
-                                class="file-input file-input-bordered w-full max-w-xs" required />
+                                class="file-input file-input-bordered w-full max-w-xs"  accept=".xlsx,.xls,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel" required />
                             <label class="label">
                                 @error('import_data')
                                     <span class="label-text-alt text-error">{{ $message }}</span>

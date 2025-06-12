@@ -75,17 +75,34 @@ class KriteriaRepository
 
     public function import($data)
     {
-        // menangkap file excel
-        $file = $data->file('import_data');
-
-        // import data
-        $import = Excel::import(new KriteriaImport, $file);
-
-        DB::table('matriks_perbandingan_utama')->truncate();
-        $this->add_matriks_perbandingan();
-        $this->add_penilaian_alternatif();
-
-        return $import;
+        try {
+            // menangkap file excel
+            $file = $data->file('import_data');
+            $import = new KriteriaImport;
+            Excel::import($import, $file);
+    
+            // Jika ada baris gagal, tangani di sini (jika pakai SkipsOnFailure)
+            if (method_exists($import, 'failures') && $import->failures()->isNotEmpty()) {
+                $messages = $import->failures()->map(function($failure) {
+                    return $failure->errors()[0] ?? 'Data tidak valid';
+                })->implode(', ');
+                return [
+                    'success' => false,
+                    'message' => $messages,
+                ];
+            }
+    
+            DB::table('matriks_perbandingan_utama')->truncate();
+            $this->add_matriks_perbandingan();
+            $this->add_penilaian_alternatif();
+    
+            return ['success' => true];
+        } catch (\Exception $e) {
+            return [
+                'success' => false,
+                'message' => $e->getMessage(),
+            ];
+        }
     }
 
     public function add_matriks_perbandingan()

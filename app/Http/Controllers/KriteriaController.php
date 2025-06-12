@@ -69,9 +69,15 @@ class KriteriaController extends Controller
             'import_data' => 'required|mimes:xls,xlsx'
         ]);
 
-        $this->kriteriaService->import($request);
+        $result = $this->kriteriaService->import($request);
 
-        // alihkan halaman kembali
+        if (isset($result['success']) && !$result['success']) {
+            // Hilangkan semua tanda petik satu dan dua dari pesan error
+            $message = str_replace(["&#039;", "'", '"'], '', $result['message']);
+            return redirect('dashboard/kriteria')->with('gagal', $message);
+        }
+        
+        // Jika sukses
         return redirect('dashboard/kriteria')->with('berhasil', "Data berhasil di import!");
     }
 }

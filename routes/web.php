@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\AdminOnly;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AHPController;
 use App\Http\Controllers\UserController;
@@ -52,59 +53,70 @@ Route::group([
 ], function () {
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/profil', [DashboardController::class, 'profile'])->name('profile');
-
-    Route::group([
-        'prefix' => 'kriteria'
-    ], function () {
-        Route::get('/', [KriteriaController::class, 'index'])->name('kriteria');
-        Route::post('/simpan', [KriteriaController::class, 'simpan'])->name('kriteria.simpan');
-        Route::get('/ubah', [KriteriaController::class, 'ubah'])->name('kriteria.ubah');
-        Route::post('/ubah', [KriteriaController::class, 'perbarui'])->name('kriteria.perbarui');
-        Route::post('/hapus', [KriteriaController::class, 'hapus'])->name('kriteria.hapus');
-        Route::post('/import', [KriteriaController::class, 'import'])->name('kriteria.import');
-
-        Route::get('/perhitungan_utama', [AHPController::class, 'index_perhitungan_utama'])->name('perhitungan_utama');
-        Route::get('/matriks_perbandingan/{kriteria_id}', [AHPController::class, 'ubah_matriks_perbandingan_utama'])->name('matriks_perbandingan_utama.ubah');
-        Route::post('/matriks_perbandingan', [AHPController::class, 'matriks_perbandingan_utama'])->name('matriks_perbandingan_utama.hitung');
-        Route::post('/matriks_utama', [AHPController::class, 'matriks_utama'])->name('matriks_utama.hitung');
-    });
-
-    Route::group([
-        'prefix' => 'alternatif'
-    ], function () {
-        Route::get('/', [AlternatifController::class, 'index'])->name('alternatif');
-        Route::post('/simpan', [AlternatifController::class, 'simpan'])->name('alternatif.simpan');
-        Route::get('/ubah', [AlternatifController::class, 'ubah'])->name('alternatif.ubah');
-        Route::post('/ubah', [AlternatifController::class, 'perbarui'])->name('alternatif.perbarui');
-        Route::post('/hapus', [AlternatifController::class, 'hapus'])->name('alternatif.hapus');
-        Route::post('/import', [AlternatifController::class, 'import'])->name('alternatif.import');
-    });
-
-    Route::group([
-        'prefix' => 'penilaian'
-    ], function () {
-        Route::get('/', [PenilaianController::class, 'index'])->name('penilaian');
-        Route::get('/ubah/{alternatif_id}', [PenilaianController::class, 'ubah'])->name('penilaian.ubah');
-        Route::post('/ubah/{alternatif_id}', [PenilaianController::class, 'perbarui'])->name('penilaian.perbarui');
-        Route::post('/perhitungan_alternatif', [PenilaianController::class, 'perhitungan_alternatif'])->name('penilaian.hitung');
-        Route::post('/pdf_ahp', [PenilaianController::class, 'pdf_ahp'])->name('penilaian.pdf_ahp');
-        Route::post('/pdf_hasil', [PenilaianController::class, 'pdf_hasil'])->name('penilaian.pdf_hasil');
-    });
-
-    Route::group([
-        'prefix' => 'user'
-    ], function () {
-        Route::get('/', [UserController::class, 'index'])->name('user');
-        Route::post('/simpan', [UserController::class, 'simpan'])->name('user.simpan');
-        Route::get('/ubah', [UserController::class, 'ubah'])->name('user.ubah');
-        Route::post('/ubah', [UserController::class, 'perbarui'])->name('user.perbarui');
-        Route::post('/hapus', [UserController::class, 'hapus'])->name('user.hapus');
-    });
-
     Route::group([
         'prefix' => 'hasil_akhir'
     ], function () {
         Route::get('/', [PenilaianController::class, 'hasil_akhir'])->name('penilaian.hasil_akhir');
+    });
+    Route::post('penilaian/pdf_hasil', [PenilaianController::class, 'pdf_hasil'])->name('penilaian.pdf_hasil');
+
+
+    Route::middleware([AdminOnly::class])->group(function () {
+        Route::group([
+            'prefix' => 'kriteria'
+        ], function () {
+            Route::get('/', [KriteriaController::class, 'index'])->name('kriteria');
+            Route::post('/simpan', [KriteriaController::class, 'simpan'])->name('kriteria.simpan');
+            Route::get('/ubah', [KriteriaController::class, 'ubah'])->name('kriteria.ubah');
+            Route::post('/ubah', [KriteriaController::class, 'perbarui'])->name('kriteria.perbarui');
+            Route::post('/hapus', [KriteriaController::class, 'hapus'])->name('kriteria.hapus');
+            Route::post('/import', [KriteriaController::class, 'import'])->name('kriteria.import');
+
+            Route::get('/perhitungan_utama', [AHPController::class, 'index_perhitungan_utama'])->name('perhitungan_utama');
+            Route::get('/matriks_perbandingan/{kriteria_id}', [AHPController::class, 'ubah_matriks_perbandingan_utama'])->name('matriks_perbandingan_utama.ubah');
+            Route::post('/matriks_perbandingan', [AHPController::class, 'matriks_perbandingan_utama'])->name('matriks_perbandingan_utama.hitung');
+            Route::post('/matriks_utama', [AHPController::class, 'matriks_utama'])->name('matriks_utama.hitung');
+        });
+
+        Route::group([
+            'prefix' => 'alternatif'
+        ], function () {
+            Route::get('/', [AlternatifController::class, 'index'])->name('alternatif');
+            Route::post('/simpan', [AlternatifController::class, 'simpan'])->name('alternatif.simpan');
+            Route::get('/ubah', [AlternatifController::class, 'ubah'])->name('alternatif.ubah');
+            Route::post('/ubah', [AlternatifController::class, 'perbarui'])->name('alternatif.perbarui');
+            Route::post('/hapus', [AlternatifController::class, 'hapus'])->name('alternatif.hapus');
+            Route::post('/import', [AlternatifController::class, 'import'])->name('alternatif.import');
+        });
+
+        Route::group([
+            'prefix' => 'penilaian'
+        ], function () {
+            Route::get('/', [PenilaianController::class, 'index'])->name('penilaian');
+            Route::get('/ubah/{alternatif_id}', [PenilaianController::class, 'ubah'])->name('penilaian.ubah');
+            Route::post('/ubah/{alternatif_id}', [PenilaianController::class, 'perbarui'])->name('penilaian.perbarui');
+            Route::post('/perhitungan_alternatif', [PenilaianController::class, 'perhitungan_alternatif'])->name('penilaian.hitung');
+            Route::post('/pdf_ahp', [PenilaianController::class, 'pdf_ahp'])->name('penilaian.pdf_ahp');
+        });
+
+        Route::group([
+            'prefix' => 'user'
+        ], function () {
+            Route::get('/', [UserController::class, 'index'])->name('user');
+            Route::post('/simpan', [UserController::class, 'simpan'])->name('user.simpan');
+            Route::get('/ubah', [UserController::class, 'ubah'])->name('user.ubah');
+            Route::post('/ubah', [UserController::class, 'perbarui'])->name('user.perbarui');
+            Route::post('/hapus', [UserController::class, 'hapus'])->name('user.hapus');
+        });
+        
+        Route::group([
+            'prefix' => 'reset'
+        ], function () {
+            Route::get('/', [DashboardController::class, 'indexReset'])->name('reset');
+            Route::get('/alternatif', [DashboardController::class, 'resetAlternatif'])->name('reset.alternatif');
+            Route::get('/semua', [DashboardController::class, 'resetAll'])->name('reset.semua');
+        });
+        
     });
 });
 

@@ -40,4 +40,42 @@ class DashboardController extends Controller
             'user' => auth()->user(),
         ]);
     }
+
+    public function indexReset()
+    {
+        $judul = 'Reset Data';
+        return view('dashboard.reset.index', compact('judul'));
+    }
+
+    public function resetAlternatif()
+    {
+        // Hapus data relasi dulu
+        DB::table('penilaian')->delete();
+        DB::table('hasil_solusi_ahp')->delete();
+        // Baru hapus data alternatif
+        DB::table('alternatif')->delete();
+
+        return redirect()->route('reset')->with('success', 'Data alternatif berhasil direset.');
+    }
+
+
+    public function resetAll()
+    {
+        // Matikan foreign key checks
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+
+        DB::table('alternatif')->truncate();
+        DB::table('kriteria')->truncate();
+        DB::table('hasil_solusi_ahp')->truncate();
+        DB::table('penilaian')->truncate();
+        DB::table('matriks_perbandingan_utama')->truncate();
+        DB::table('matriks_nilai_utama')->truncate();
+        DB::table('matriks_penjumlahan_utama')->truncate();
+        DB::table('matriks_penjumlahan_prioritas_utama')->truncate();
+
+        // Aktifkan kembali foreign key checks
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+
+        return redirect()->route('reset')->with('success', 'Semua data berhasil direset.');
+    }
 }

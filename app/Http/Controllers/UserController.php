@@ -2,44 +2,68 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
     public function index()
     {
-        // Logic to retrieve and display users
-        return view('users.index');
+        $judul = 'Pengguna';
+        $data = User::all();
+        return view('dashboard.users.index', compact('judul', 'data'));
     }
 
-    public function create()
+    public function simpan(Request $request)
     {
-        // Logic to show user creation form
-        return view('users.create');
+        $validated = $request->validate([
+            'name'     => 'required|string|max:255',
+            'email'    => 'required|email|unique:users,email',
+            'password' => 'required|string|min:6',
+            'role'     => ['required', Rule::in(['admin', 'user'])],
+        ]);
+
+        $validated['password'] = Hash::make($validated['password']);
+        User::create($validated);
+
+        return redirect()->route('user')->with('berhasil', 'User berhasil ditambahkan.');
     }
 
-    public function store(Request $request)
+    public function ubah(Request $request)
     {
-        // Logic to store a new user
-        // Validate and save the user data
-        return redirect()->route('users.index')->with('success', 'User created successfully.');
+        $user = User::findOrFail($request->id);
+        return response()->json($user);
     }
 
-    public function edit($id)
+    public function perbarui(Request $request)
     {
-        // Logic to show user edit form
-        return view('users.edit', compact('id'));
+        $user = User::findOrFail($request->id);
+
+        $validated = $request->validate([
+            'name'     => 'required|string|max:255',
+            'email'    => 'required|email|unique:users,email,' . $user->id,
+            'password' => 'nullable|string|min:6',
+            'role'     => ['required', Rule::in(['admin', 'user'])],
+        ]);
+
+        if ($request->filled('password')) {
+            $validated['password'] = Hash::make($request->password);
+        } else {
+            unset($validated['password']);
+        }
+
+        $user->update($validated);
+
+        return redirect()->route('user')->with('berhasil', 'User berhasil diperbarui.');
     }
 
-    public function update(Request $request, $id)
+    public function hapus(Request $request)
     {
-        // Logic to update the user data
-        return redirect()->route('users.index')->with('success', 'User updated successfully.');
-    }
+        $user = User::findOrFail($request->id);
+        $user->delete();
 
-    public function destroy($id)
-    {
-        // Logic to delete a user
-        return redirect()->route('users.index')->with('success', 'User deleted successfully.');
+        return response()->json(['success' => true]);
     }
 }

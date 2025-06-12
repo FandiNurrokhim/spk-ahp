@@ -19,16 +19,6 @@
                                     <i class="ri-add-fill"></i>
                                     Tambah {{ $judul }}
                                 </label>
-                                <label for="import_button"
-                                    class="btn btn-sm text-white dark:text-gray-800 normal-case bg-green-600 hover:bg-green-600 hover:bg-opacity-70 hover:border-opacity-70 dark:bg-green-300 dark:hover:bg-green-300 dark:hover:bg-opacity-90 dark:border-green-300">
-                                    <i class="ri-file-excel-line"></i>
-                                    Import Data
-                                </label>
-                                <a href="{{ asset('template/Template Alternatif.xlsx') }}"
-                                    class="btn btn-sm text-white dark:text-gray-800 normal-case bg-blue-600 hover:bg-blue-600 hover:bg-opacity-70 hover:border-opacity-70 dark:bg-blue-300 dark:hover:bg-blue-300 dark:hover:bg-opacity-90 dark:border-blue-300">
-                                    <i class="ri-file-download-line"></i>
-                                    Unduh Template Excel
-                                </a>
                             </div>
                         </div>
                     </div>
@@ -39,21 +29,26 @@
                             <thead class="text-xs text-gray-700 uppercase bg-gray-50">
                                 <tr>
                                     <th scope="col" class="px-4 py-3">Nama</th>
-                                    <th scope="col" class="px-4 py-3">NIS/NISN</th>
-                                    <th scope="col" class="px-4 py-3">Tanggal Lahir</th>
-                                    <th scope="col" class="px-4 py-3">Jenis Kelamin</th>
-                                    <th scope="col" class="px-4 py-3">Alamat</th>
+                                    <th scope="col" class="px-4 py-3">Email</th>
+                                    <th scope="col" class="px-4 py-3">Role</th>
                                     <th scope="col" class="px-4 py-3">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @foreach ($data as $item)
                                     <tr class="border-b dark:border-gray-700">
-                                        <td class="px-4 py-3">{{ $item->nama }}</td>
-                                        <td class="px-4 py-3">{{ $item->nisn }}</td>
-                                        <td class="px-4 py-3">{{ $item->tanggal_lahir }}</td>
-                                        <td class="px-4 py-3">{{ $item->jenis_kelamin }}</td>
-                                        <td class="px-4 py-3">{{ $item->alamat }}</td>
+                                        <td class="px-4 py-3">{{ $item->name }}</td>
+                                        <td class="px-4 py-3">{{ $item->email }}</td>
+                                        <td class="px-4 py-3">
+                                            @if ($item->role === 'admin')
+                                                <span class="badge bg-purple-600 text-white font-bold">Admin</span>
+                                            @elseif ($item->role === 'user')
+                                                <span class="badge bg-gray-400 text-white font-bold">User</span>
+                                            @else
+                                                <span
+                                                    class="badge bg-gray-200 text-gray-700 font-bold">{{ ucfirst($item->role) }}</span>
+                                            @endif
+                                        </td>
                                         <td class="px-4 py-3">
                                             <label for="edit_button" class="btn btn-sm btn-warning text-white"
                                                 onclick="return edit_button('{{ $item->id }}')">
@@ -76,73 +71,59 @@
             <input type="checkbox" id="add_button" class="modal-toggle" />
             <div class="modal">
                 <div class="modal-box">
-                    <form action="{{ route('alternatif.simpan') }}" method="post" enctype="multipart/form-data">
+                    <form action="{{ route('user.simpan') }}" method="post" enctype="multipart/form-data">
                         <h3 class="font-bold text-lg">Tambah {{ $judul }}</h3>
                         @csrf
                         <div class="form-control w-full max-w-xs">
                             <label class="label">
                                 <span class="label-text">Nama</span>
                             </label>
-                            <input type="text" name="nama" placeholder="Type here"
-                                class="input input-bordered w-full max-w-xs text-gray-800" value="{{ old('nama') }}"
+                            <input type="text" name="name" placeholder="Masukkan nama"
+                                class="input input-bordered w-full max-w-xs text-gray-800" value="{{ old('name') }}"
                                 required />
                             <label class="label">
-                                @error('nama')
+                                @error('name')
                                     <span class="label-text-alt text-error">{{ $message }}</span>
                                 @enderror
                             </label>
                         </div>
                         <div class="form-control w-full max-w-xs">
                             <label class="label">
-                                <span class="label-text">NIS/NISN</span>
+                                <span class="label-text">Email</span>
                             </label>
-                            <input type="text" name="nisn" placeholder="Masukkan NIS/NISN"
-                                class="input input-bordered w-full max-w-xs text-gray-800" value="{{ old('nisn') }}"
+                            <input type="email" name="email" placeholder="Masukkan email"
+                                class="input input-bordered w-full max-w-xs text-gray-800" value="{{ old('email') }}"
                                 required />
                             <label class="label">
-                                @error('nisn')
+                                @error('email')
                                     <span class="label-text-alt text-error">{{ $message }}</span>
                                 @enderror
                             </label>
                         </div>
                         <div class="form-control w-full max-w-xs">
                             <label class="label">
-                                <span class="label-text">Tanggal Lahir</span>
+                                <span class="label-text">Password</span>
                             </label>
-                            <input type="date" name="tanggal_lahir"
-                                class="input input-bordered w-full max-w-xs text-gray-800"
-                                value="{{ old('tanggal_lahir') }}" max="{{ date('Y-m-d') }}" required />
+                            <input type="password" name="password" id="password" placeholder="Masukkan password"
+                                class="input input-bordered w-full max-w-xs text-gray-800" autocomplete="password" required />
                             <label class="label">
-                                @error('tanggal_lahir')
+                                @error('password')
                                     <span class="label-text-alt text-error">{{ $message }}</span>
                                 @enderror
+                                <span class="label-text-alt text-error" id="min-char"></span>
                             </label>
                         </div>
                         <div class="form-control w-full max-w-xs">
                             <label class="label">
-                                <span class="label-text">Jenis Kelamin</span>
+                                <span class="label-text">Role</span>
                             </label>
-                            <select name="jenis_kelamin" class="select select-bordered w-full max-w-xs" required>
-                                <option value="">-- Pilih Jenis Kelamin --</option>
-                                <option value="Laki-laki" {{ old('jenis_kelamin') == 'Laki-laki' ? 'selected' : '' }}>
-                                    Laki-laki</option>
-                                <option value="Perempuan" {{ old('jenis_kelamin') == 'Perempuan' ? 'selected' : '' }}>
-                                    Perempuan</option>
+                            <select name="role" class="select select-bordered w-full max-w-xs" required>
+                                <option value="">-- Pilih Role --</option>
+                                <option value="admin" {{ old('role') == 'admin' ? 'selected' : '' }}>Admin</option>
+                                <option value="user" {{ old('role') == 'user' ? 'selected' : '' }}>User</option>
                             </select>
                             <label class="label">
-                                @error('jenis_kelamin')
-                                    <span class="label-text-alt text-error">{{ $message }}</span>
-                                @enderror
-                            </label>
-                        </div>
-                        <div class="form-control w-full max-w-xs">
-                            <label class="label">
-                                <span class="label-text">Alamat</span>
-                            </label>
-                            <textarea name="alamat" class="textarea textarea-bordered w-full max-w-xs text-gray-800"
-                                placeholder="Masukkan alamat" required>{{ old('alamat') }}</textarea>
-                            <label class="label">
-                                @error('alamat')
+                                @error('role')
                                     <span class="label-text-alt text-error">{{ $message }}</span>
                                 @enderror
                             </label>
@@ -160,7 +141,7 @@
             <input type="checkbox" id="edit_button" class="modal-toggle" />
             <div class="modal">
                 <div class="modal-box" id="edit_form">
-                    <form action="{{ route('alternatif.perbarui') }}" method="post" enctype="multipart/form-data">
+                    <form action="{{ route('user.perbarui') }}" method="post" enctype="multipart/form-data">
                         <h3 class="font-bold text-lg">Ubah {{ $judul }}: <span class="text-greenPrimary"
                                 id="title_form"><span class="loading loading-dots loading-md"></span></span></h3>
                         @csrf
@@ -170,63 +151,61 @@
                                 <span class="label-text">Nama</span>
                                 <span class="label-text-alt" id="loading_edit1"></span>
                             </label>
-                            <input type="text" name="nama" placeholder="Type here"
+                            <input type="text" name="name" placeholder="Masukkan nama"
                                 class="input input-bordered w-full text-gray-800" required />
                             <label class="label">
-                                @error('nama')
+                                @error('name')
                                     <span class="label-text-alt text-error">{{ $message }}</span>
                                 @enderror
                             </label>
                         </div>
                         <div class="form-control w-full max-w-xs">
                             <label class="label">
-                                <span class="label-text">NIS/NISN</span>
+                                <span class="label-text">Email</span>
                             </label>
-                            <input type="text" name="nisn" placeholder="Masukkan NIS/NISN"
+                            <input type="email" name="email" placeholder="Masukkan email"
                                 class="input input-bordered w-full text-gray-800" required />
                             <label class="label">
-                                @error('nisn')
+                                @error('email')
                                     <span class="label-text-alt text-error">{{ $message }}</span>
                                 @enderror
                             </label>
                         </div>
                         <div class="form-control w-full max-w-xs">
                             <label class="label">
-                                <span class="label-text">Tanggal Lahir</span>
+                                <span class="label-text">Password Baru (kosongkan jika tidak diubah)</span>
                             </label>
-                            <input type="date" name="tanggal_lahir" class="input input-bordered w-full text-gray-800"
-                                max="{{ date('Y-m-d') }}" required />
+                            <input type="password" name="password" id="new-password" placeholder="Masukkan password"
+                                class="input input-bordered w-full max-w-xs text-gray-800" autocomplete="new-password" required />
                             <label class="label">
-                                @error('tanggal_lahir')
+                                @error('password')
                                     <span class="label-text-alt text-error">{{ $message }}</span>
                                 @enderror
+                                <span class="label-text-alt text-error" id="new-min-char"></span>
                             </label>
                         </div>
                         <div class="form-control w-full max-w-xs">
                             <label class="label">
-                                <span class="label-text">Jenis Kelamin</span>
+                                <span class="label-text">Konfirmasi Password</span>
                             </label>
-                            <select name="jenis_kelamin" class="select select-bordered w-full" required>
-                                <option value="">-- Pilih Jenis Kelamin --</option>
-                                <option value="Laki-laki" {{ old('jenis_kelamin') == 'Laki-laki' ? 'selected' : '' }}>
-                                    Laki-laki</option>
-                                <option value="Perempuan" {{ old('jenis_kelamin') == 'Perempuan' ? 'selected' : '' }}>
-                                    Perempuan</option>
+                            <input type="password" name="password_confirmation" id="password_confirmation"
+                                placeholder="Konfirmasi password"
+                                class="input input-bordered w-full max-w-xs text-gray-800" required />
+                            <label class="label">
+                                <span class="label-text-alt text-error" id="password-match-message"></span>
+                            </label>
+                        </div>
+                        <div class="form-control w-full max-w-xs">
+                            <label class="label">
+                                <span class="label-text">Role</span>
+                            </label>
+                            <select name="role" class="select select-bordered w-full" required>
+                                <option value="">-- Pilih Role --</option>
+                                <option value="admin">Admin</option>
+                                <option value="user">User</option>
                             </select>
                             <label class="label">
-                                @error('jenis_kelamin')
-                                    <span class="label-text-alt text-error">{{ $message }}</span>
-                                @enderror
-                            </label>
-                        </div>
-                        <div class="form-control w-full max-w-xs">
-                            <label class="label">
-                                <span class="label-text">Alamat</span>
-                            </label>
-                            <textarea name="alamat" class="textarea textarea-bordered w-full text-gray-800" placeholder="Masukkan alamat"
-                                required></textarea>
-                            <label class="label">
-                                @error('alamat')
+                                @error('role')
                                     <span class="label-text-alt text-error">{{ $message }}</span>
                                 @enderror
                             </label>
@@ -238,35 +217,6 @@
                     </form>
                 </div>
                 <label class="modal-backdrop" for="edit_button">Close</label>
-            </div>
-            {{-- Import Data --}}
-            <input type="checkbox" id="import_button" class="modal-toggle" />
-            <div class="modal">
-                <div class="modal-box">
-                    <form action="{{ route('alternatif.import') }}" method="post" enctype="multipart/form-data">
-                        <h3 class="font-bold text-lg">Import {{ $judul }}</h3>
-                        @csrf
-                        <div class="form-control w-full max-w-xs">
-                            <label class="label">
-                                <span class="label-text">Import File</span>
-                            </label>
-                            <input type="file" name="import_data"
-                                class="file-input file-input-bordered w-full max-w-xs"
-                                accept=".xlsx,.xls,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel"
-                                required />
-                            <label class="label">
-                                @error('import_data')
-                                    <span class="label-text-alt text-error">{{ $message }}</span>
-                                @enderror
-                            </label>
-                        </div>
-                        <div class="modal-action">
-                            <button type="submit" class="btn btn-success">Import</button>
-                            <label for="import_button" class="btn">Batal</label>
-                        </div>
-                    </form>
-                </div>
-                <label class="modal-backdrop" for="import_button">Close</label>
             </div>
         </section>
     </div>
@@ -293,10 +243,10 @@
             });
         @endif
 
-        @if ($errors->any())
+        @if (session()->has('gagal'))
             Swal.fire({
                 title: 'Gagal',
-                text: `{!! implode('\n', $errors->all()) !!}`,
+                text: '{{ session('gagal') }}',
                 icon: 'error',
                 confirmButtonColor: '#6419E6',
                 confirmButtonText: 'OK',
@@ -315,6 +265,50 @@
             })
         @endif
 
+        $('form[action="{{ route('user.simpan') }}"]').on('submit', function(e) {
+            let pass = $('#password').val();
+            let conf = $('#password_confirmation').val();
+
+            if (pass.length < 6) {
+                $('#min-char').text('Password minimal 6 karakter.');
+                $('#password').addClass('input-error');
+                e.preventDefault();
+                return;
+            } else {
+                $('#password').removeClass('input-error');
+            }
+
+            if (pass !== conf) {
+                $('#password-match-message').text('Konfirmasi password tidak sesuai.');
+                $('#password_confirmation').addClass('input-error');
+                e.preventDefault();
+            } else {
+                $('#password-match-message').text('');
+                $('#password_confirmation').removeClass('input-error');
+            }
+        });
+        // Live check saat mengetik
+        $('#password, #new-password, #password_confirmation').on('keyup', function() {
+            let pass = $('#password').val();
+            let newPass = $('#new-password').val();
+            let conf = $('#password_confirmation').val();
+
+            if ((pass.length > 0 || newPass.length > 0) && pass.length < 6) {
+                $('#min-char').text('Password minimal 6 karakter.');
+                $('#new-min-char').text('Password minimal 6 karakter.');
+                $('#new-password').addClass('input-error');
+                $('#password').addClass('input-error');
+            } else if (conf.length > 0 && pass !== conf) {
+                $('#password-match-message').text('Konfirmasi password tidak sesuai.');
+                $('#password_confirmation').addClass('input-error');
+                $('#new-password').removeClass('input-error');
+            } else {
+                $('#password-match-message').text('');
+                $('#password_confirmation').removeClass('input-error');
+                $('#password').removeClass('input-error');
+                $('#new-password').removeClass('input-error');
+            }
+        });
         window.edit_button = function(id) {
             // Loading effect start
             let loading = `<span class="loading loading-dots loading-md text-purple-600"></span>`;
@@ -323,7 +317,7 @@
 
             $.ajax({
                 type: "get",
-                url: "{{ route('alternatif.ubah') }}",
+                url: "{{ route('user.ubah') }}",
                 data: {
                     "_token": "{{ csrf_token() }}",
                     "id": id
@@ -336,11 +330,11 @@
 
                     $("#title_form").html(`${items[1]}`);
                     $("input[name='id']").val(items[0]);
-                    $("input[name='nama']").val(items[1]);
-                    $("input[name='nisn']").val(items[2]);
-                    $("input[name='tanggal_lahir']").val(items[3]);
-                    $("select[name='jenis_kelamin']").val(items[4]);
-                    $("textarea[name='alamat']").val(items[5]);
+                    $("input[name='name']").val(items[1]);
+                    $("input[name='email']").val(items[2]);
+                    $("select[name='role']").val(items[3]);
+                    $("input[name='role']").val(items[3]);
+                    $("input[name='password']").val("");
 
                     // Loading effect end
                     loading = "";
@@ -365,7 +359,7 @@
                 if (result.isConfirmed) {
                     $.ajax({
                         type: "post",
-                        url: "{{ route('alternatif.hapus') }}",
+                        url: "{{ route('user.hapus') }}",
                         data: {
                             "_token": "{{ csrf_token() }}",
                             "id": id
