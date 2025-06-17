@@ -1,8 +1,9 @@
 <!-- Desktop sidebar -->
 <aside class="z-20 hidden w-64 overflow-y-auto bg-white dark:bg-gray-800 md:block flex-shrink-0">
-    <div class="text-gray-500 dark:text-gray-400">
-        <a href="{{ route('dashboard') }}">
-            <img src="{{ asset('/img/Logo Man.jpg') }}" alt="Logo" class="h-20 m-2">
+    <div class="text-gray-500 flex-col justify-center align-middle  dark:text-gray-400">
+        <a href="{{ route('dashboard') }}" class="flex flex-col items-center justify-center my-4">
+            <img src="{{ asset('favicon/favicon.svg') }}" alt="Logo" class="w-20 h-20 mb-4">
+            <h1 class="text-2xl font-bold text-gray-700 dark:text-white">Dashboard Admin</h1>
         </a>
         <ul class="mt-6">
             <li class="relative px-6 py-3">
@@ -142,8 +143,9 @@
     x-transition:leave-end="opacity-0 transform -translate-x-20" @click.away="closeSideMenu"
     @keydown.escape="closeSideMenu">
     <div class="py-4 text-gray-500 dark:text-gray-400">
-        <a class="ml-6 text-lg font-bold text-gray-800 dark:text-gray-200 font-lato" href="{{ route('dashboard') }}">
-            <img src="{{ asset('/img/Logo Man.jpg') }}" alt="Logo" class="h-8 w-auto">
+        <a href="{{ route('dashboard') }}" class="flex flex-col items-center justify-center my-4">
+            <img src="{{ asset('favicon/favicon.svg') }}" alt="Logo" class="w-20 h-20 mb-4">
+            <h1 class="text-2xl font-bold text-gray-700 dark:text-white">Dashboard Admin</h1>
         </a>
         <ul class="mt-6">
             <li class="relative px-6 py-3">
