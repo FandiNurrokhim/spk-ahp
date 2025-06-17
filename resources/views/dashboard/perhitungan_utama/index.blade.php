@@ -273,7 +273,6 @@
                             <table id="tabel_data_matriks_penjumlahan"
                                 class="nowrap w-full text-sm text-left text-gray-500 dark:text-gray-400 stripe hover"
                                 style="width:100%; padding-top: 1em; padding-bottom: 1em;">
-                                <caption class="mb-3 text-base">Consistency Ratio: Cara 2</caption>
                                 <thead class="text-xs text-gray-700 uppercase bg-gray-50">
                                     <tr>
                                         <th scope="col" class="px-4 py-3">Keterangan</th>
