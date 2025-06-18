@@ -57,7 +57,15 @@
                                         </td>
                                         @foreach ($matriksPerbandingan->where('kriteria_id', $item->kriteria_id) as $value)
                                             @if ($value->nilai != null)
-                                                <td class="px-4 py-3 text-lg">{{ $value->nilai }}</td>
+                                                <td class="px-4 py-3 text-lg">
+                                                    @php
+                                                        $nilai = $value->nilai ?? 0;
+                                                        $decimal = explode('.', (string) $nilai)[1] ?? '';
+                                                        echo strlen($decimal) >= 4
+                                                            ? number_format($nilai, 3, ',', '.')
+                                                            : $nilai;
+                                                    @endphp
+                                                </td>
                                             @else
                                                 <td class="px-4 py-3 text-lg">0</td>
                                             @endif
@@ -70,7 +78,15 @@
                                     <th scope="col" class="px-4 py-3">Jumlah</th>
                                     @foreach ($kriteria as $item)
                                         <th scope="col" class="px-4 py-3">
-                                            {{ $matriksPerbandingan->where('kriteria_id_banding', $item->id)->sum('nilai') }}
+                                            @php
+                                                $sum = $matriksPerbandingan
+                                                    ->where('kriteria_id_banding', $item->id)
+                                                    ->sum('nilai');
+                                                $decimalPart = explode('.', (string) $sum)[1] ?? '';
+                                            @endphp
+
+                                            {{ strlen($decimalPart) >= 4 ? number_format($sum, 3, ',', '.') : $sum }}
+
                                         </th>
                                     @endforeach
                                 </tr>

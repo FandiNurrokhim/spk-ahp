@@ -94,7 +94,10 @@ class AHPController extends Controller
     public function matriks_perbandingan_utama(Request $request)
     {
         foreach ($this->kriteriaService->getAll() as $value => $item) {
-            $nilai = $request->post()[$item->id];
+            $nilai = (float) $request->post()[$item->id];
+
+            // Bulatkan ke 3 angka desimal
+            $nilai = round($nilai, 3);
 
             // Update nilai utama
             DB::table('matriks_perbandingan_utama')
@@ -109,11 +112,14 @@ class AHPController extends Controller
                 ->where('kriteria_id', $item->id)
                 ->where('kriteria_id_banding', $request->kriteria_id)
                 ->update([
-                    'nilai' => 1 / $nilai,
+                    'nilai' => round(1 / $nilai, 3),
                 ]);
         }
 
-        return redirect('dashboard/kriteria/perhitungan_utama')->with('berhasil', ["Matriks Perbandingan berhasil ditambahkan!", $this->kriteriaService->getDataById($request->kriteria_id)->nama]);
+        return redirect('dashboard/kriteria/perhitungan_utama')->with('berhasil', [
+            "Matriks Perbandingan berhasil ditambahkan!",
+            $this->kriteriaService->getDataById($request->kriteria_id)->nama
+        ]);
     }
 
     public function matriks_nilai_utama()
