@@ -105,7 +105,8 @@
                                 <span class="label-text">Password</span>
                             </label>
                             <input type="password" name="password" id="password" placeholder="Masukkan password"
-                                class="input input-bordered w-full max-w-xs text-gray-800" autocomplete="password" required />
+                                class="input input-bordered w-full max-w-xs text-gray-800" autocomplete="password"
+                                required />
                             <label class="label">
                                 @error('password')
                                     <span class="label-text-alt text-error">{{ $message }}</span>
@@ -176,7 +177,8 @@
                                 <span class="label-text">Password Baru (kosongkan jika tidak diubah)</span>
                             </label>
                             <input type="password" name="password" id="new-password" placeholder="Masukkan password"
-                                class="input input-bordered w-full max-w-xs text-gray-800" autocomplete="new-password" required />
+                                class="input input-bordered w-full max-w-xs text-gray-800" autocomplete="new-password"
+                                required />
                             <label class="label">
                                 @error('password')
                                     <span class="label-text-alt text-error">{{ $message }}</span>
@@ -267,24 +269,37 @@
 
         $('form[action="{{ route('user.simpan') }}"]').on('submit', function(e) {
             let pass = $('#password').val();
-            let conf = $('#password_confirmation').val();
 
+            // Validasi hanya password untuk form tambah (tidak ada konfirmasi)
             if (pass.length < 6) {
                 $('#min-char').text('Password minimal 6 karakter.');
                 $('#password').addClass('input-error');
                 e.preventDefault();
                 return;
-            } else {
-                $('#password').removeClass('input-error');
             }
 
-            if (pass !== conf) {
+            console.log('Form akan submit');
+        });
+
+        // Validasi untuk form edit (dengan konfirmasi password)
+        $('form[action="{{ route('user.perbarui') }}"]').on('submit', function(e) {
+            let newPass = $('#new-password').val();
+            let conf = $('#password_confirmation').val();
+
+            // Validasi password baru
+            if (newPass.length > 0 && newPass.length < 6) {
+                $('#new-min-char').text('Password minimal 6 karakter.');
+                $('#new-password').addClass('input-error');
+                e.preventDefault();
+                return;
+            }
+
+            // Validasi konfirmasi password
+            if (newPass !== conf) {
                 $('#password-match-message').text('Konfirmasi password tidak sesuai.');
                 $('#password_confirmation').addClass('input-error');
                 e.preventDefault();
-            } else {
-                $('#password-match-message').text('');
-                $('#password_confirmation').removeClass('input-error');
+                return;
             }
         });
         // Live check saat mengetik
@@ -293,20 +308,31 @@
             let newPass = $('#new-password').val();
             let conf = $('#password_confirmation').val();
 
-            if ((pass.length > 0 || newPass.length > 0) && pass.length < 6) {
+            // Validasi password untuk form tambah (password biasa)
+            if (pass.length > 0 && pass.length < 6) {
                 $('#min-char').text('Password minimal 6 karakter.');
+                $('#password').addClass('input-error');
+            } else {
+                $('#min-char').text('');
+                $('#password').removeClass('input-error');
+            }
+
+            // Validasi password untuk form edit (new-password)
+            if (newPass.length > 0 && newPass.length < 6) {
                 $('#new-min-char').text('Password minimal 6 karakter.');
                 $('#new-password').addClass('input-error');
-                $('#password').addClass('input-error');
-            } else if (conf.length > 0 && pass !== conf) {
+            } else {
+                $('#new-min-char').text('');
+                $('#new-password').removeClass('input-error');
+            }
+
+            // Validasi konfirmasi password
+            if (conf.length > 0 && (pass !== conf && newPass !== conf)) {
                 $('#password-match-message').text('Konfirmasi password tidak sesuai.');
                 $('#password_confirmation').addClass('input-error');
-                $('#new-password').removeClass('input-error');
             } else {
                 $('#password-match-message').text('');
                 $('#password_confirmation').removeClass('input-error');
-                $('#password').removeClass('input-error');
-                $('#new-password').removeClass('input-error');
             }
         });
         window.edit_button = function(id) {
