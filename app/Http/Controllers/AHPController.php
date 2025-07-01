@@ -28,6 +28,8 @@ class AHPController extends Controller
         $matriksPerbandingan = DB::table('matriks_perbandingan_utama as mpu')
             ->join('kriteria as k', 'k.id', '=', 'mpu.kriteria_id')
             ->select('mpu.*', 'k.id as kriteria_id', 'k.nama as nama_kriteria')
+            ->orderBy('mpu.kriteria_id', 'asc')
+            ->orderBy('mpu.kriteria_id_banding', 'asc') 
             ->get();
 
         $matriksNilai = DB::table('matriks_nilai_utama as mnu')
@@ -115,6 +117,7 @@ class AHPController extends Controller
                     'nilai' => round(1 / $nilai, 3),
                 ]);
         }
+
 
         return redirect('dashboard/kriteria/perhitungan_utama')->with('berhasil', [
             "Matriks Perbandingan berhasil ditambahkan!",

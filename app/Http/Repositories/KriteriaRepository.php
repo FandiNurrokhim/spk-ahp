@@ -80,10 +80,10 @@ class KriteriaRepository
             $file = $data->file('import_data');
             $import = new KriteriaImport;
             Excel::import($import, $file);
-    
+
             // Jika ada baris gagal, tangani di sini (jika pakai SkipsOnFailure)
             if (method_exists($import, 'failures') && $import->failures()->isNotEmpty()) {
-                $messages = $import->failures()->map(function($failure) {
+                $messages = $import->failures()->map(function ($failure) {
                     return $failure->errors()[0] ?? 'Data tidak valid';
                 })->implode(', ');
                 return [
@@ -91,11 +91,11 @@ class KriteriaRepository
                     'message' => $messages,
                 ];
             }
-    
+
             DB::table('matriks_perbandingan_utama')->truncate();
             $this->add_matriks_perbandingan();
             $this->add_penilaian_alternatif();
-    
+
             return ['success' => true];
         } catch (\Exception $e) {
             return [
@@ -167,9 +167,42 @@ class KriteriaRepository
 
     public function hapus($id)
     {
-        $data = [
-            $this->kriteria->where('id', $id)->delete(),
-        ];
-        return $data;
+        try {
+            // Hapus semua data terkait di tabel-tabel matriks yang mereferensikan kriteria ini
+            DB::table('matriks_perbandingan_utama')
+                ->where('kriteria_id', $id)
+                ->orWhere('kriteria_id_banding', $id)
+                ->delete();
+
+            DB::table('matriks_nilai_utama')
+                ->where('kriteria_id', $id)
+                ->orWhere('kriteria_id_banding', $id)
+                ->delete();
+
+            DB::table('matriks_nilai_prioritas_utama')
+                ->where('kriteria_id', $id)
+                ->delete();
+
+            DB::table('matriks_penjumlahan_utama')
+                ->where('kriteria_id', $id)
+                ->orWhere('kriteria_id_banding', $id)
+                ->delete();
+
+            DB::table('matriks_penjumlahan_prioritas_utama')
+                ->where('kriteria_id', $id)
+                ->delete();
+
+            // Hapus data penilaian terkait
+            DB::table('penilaian')
+                ->where('kriteria_id', $id)
+                ->delete();
+
+            // Setelah semua data terkait dihapus, baru hapus kriteria
+            $result = $this->kriteria->where('id', $id)->delete();
+
+            return ['success' => true, 'data' => $result];
+        } catch (\Exception $e) {
+            return ['success' => false, 'message' => $e->getMessage()];
+        }
     }
 }
