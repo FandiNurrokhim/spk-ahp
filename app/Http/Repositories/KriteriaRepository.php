@@ -32,45 +32,13 @@ class KriteriaRepository
 
     public function simpan($data)
     {
-        $data = $this->kriteria->create($data);
-        // DB::table('matriks_perbandingan_utama')->truncate(); // Dihapus/komentari agar tidak reset
-        $this->add_matriks_perbandingan_baru($data); // Tambahkan hanya perbandingan baru
+        $result = $this->kriteria->create($data);
+        
+        // Untuk WP, hanya perlu menambah penilaian alternatif
+        // Tidak perlu matriks perbandingan seperti AHP
         $this->add_penilaian_alternatif();
 
-        return $data;
-    }
-
-    // Tambahkan fungsi baru untuk menambah perbandingan hanya untuk kriteria baru
-    public function add_matriks_perbandingan_baru($kriteriaBaru)
-    {
-        $kriteriaLain = $this->kriteria->where('id', '!=', $kriteriaBaru->id)->get();
-
-        // Perbandingan kriteria baru dengan dirinya sendiri
-        DB::table('matriks_perbandingan_utama')->insert([
-            'nilai' => 1,
-            'kriteria_id' => $kriteriaBaru->id,
-            'kriteria_id_banding' => $kriteriaBaru->id,
-            'created_at' => Carbon::now(),
-            'updated_at' => Carbon::now(),
-        ]);
-
-        // Perbandingan kriteria baru dengan kriteria lain
-        foreach ($kriteriaLain as $kriteria) {
-            DB::table('matriks_perbandingan_utama')->insert([
-                'nilai' => null,
-                'kriteria_id' => $kriteriaBaru->id,
-                'kriteria_id_banding' => $kriteria->id,
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now(),
-            ]);
-            DB::table('matriks_perbandingan_utama')->insert([
-                'nilai' => null,
-                'kriteria_id' => $kriteria->id,
-                'kriteria_id_banding' => $kriteriaBaru->id,
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now(),
-            ]);
-        }
+        return $result;
     }
 
     public function import($data)
@@ -92,8 +60,7 @@ class KriteriaRepository
                 ];
             }
 
-            DB::table('matriks_perbandingan_utama')->truncate();
-            $this->add_matriks_perbandingan();
+            // Untuk WP, hanya perlu menambah penilaian alternatif
             $this->add_penilaian_alternatif();
 
             return ['success' => true];
@@ -105,43 +72,23 @@ class KriteriaRepository
         }
     }
 
-    public function add_matriks_perbandingan()
-    {
-        $kriteria = $this->getAll();
-        foreach ($kriteria as $item) {
-            foreach ($kriteria as $value) {
-                if ($item->id == $value->id) {
-                    DB::table('matriks_perbandingan_utama')->insert([
-                        'nilai' => 1,
-                        'kriteria_id' => $item->id,
-                        'kriteria_id_banding' => $value->id,
-                        'created_at' => Carbon::now(),
-                        'updated_at' => Carbon::now(),
-                    ]);
-                } else {
-                    DB::table('matriks_perbandingan_utama')->insert([
-                        'nilai' => null,
-                        'kriteria_id' => $item->id,
-                        'kriteria_id_banding' => $value->id,
-                        'created_at' => Carbon::now(),
-                        'updated_at' => Carbon::now(),
-                    ]);
-                }
-            }
-        }
-    }
-
     public function add_penilaian_alternatif()
     {
         $alternatif = Alternatif::all();
         $kriteria = $this->kriteria->all();
+        
         foreach ($kriteria as $value) {
             foreach ($alternatif as $item) {
-                $penilaian = DB::table('penilaian')->where('alternatif_id', $item->id)->where('kriteria_id', $value->id)->first();
+                $penilaian = DB::table('penilaian')
+                    ->where('alternatif_id', $item->id)
+                    ->where('kriteria_id', $value->id)
+                    ->first();
+                    
                 if ($penilaian == null) {
                     DB::table('penilaian')->insert([
                         'alternatif_id' => $item->id,
                         'kriteria_id' => $value->id,
+                        'nilai' => 0, // Default nilai 0 untuk WP
                         'created_at' => Carbon::now(),
                         'updated_at' => Carbon::now(),
                     ]);
@@ -158,42 +105,32 @@ class KriteriaRepository
 
     public function perbarui($id, $data)
     {
-        $data = $this->kriteria->where('id', $id)->update([
+        dd($data);
+        $result = $this->kriteria->where('id', $id)->update([
             "kode" => $data['kode'],
             "nama" => $data['nama'],
+            "bobot" => $data['bobot'],
+            "jenis" => $data['jenis'], 
         ]);
-        return $data;
+        
+        // Setelah update kriteria, hapus hasil WP yang sudah ada
+        // karena bobot berubah
+        $this->clearWPResults();
+        
+        return $result;
     }
 
     public function hapus($id)
     {
         try {
-            // Hapus semua data terkait di tabel-tabel matriks yang mereferensikan kriteria ini
-            DB::table('matriks_perbandingan_utama')
-                ->where('kriteria_id', $id)
-                ->orWhere('kriteria_id_banding', $id)
-                ->delete();
-
-            DB::table('matriks_nilai_utama')
-                ->where('kriteria_id', $id)
-                ->orWhere('kriteria_id_banding', $id)
-                ->delete();
-
-            DB::table('matriks_nilai_prioritas_utama')
-                ->where('kriteria_id', $id)
-                ->delete();
-
-            DB::table('matriks_penjumlahan_utama')
-                ->where('kriteria_id', $id)
-                ->orWhere('kriteria_id_banding', $id)
-                ->delete();
-
-            DB::table('matriks_penjumlahan_prioritas_utama')
-                ->where('kriteria_id', $id)
-                ->delete();
-
             // Hapus data penilaian terkait
             DB::table('penilaian')
+                ->where('kriteria_id', $id)
+                ->delete();
+
+            // Hapus hasil WP terkait
+            DB::table('hasil_wp')->delete();
+            DB::table('detail_wp')
                 ->where('kriteria_id', $id)
                 ->delete();
 
@@ -204,5 +141,50 @@ class KriteriaRepository
         } catch (\Exception $e) {
             return ['success' => false, 'message' => $e->getMessage()];
         }
+    }
+
+    /**
+     * Hapus hasil perhitungan WP ketika ada perubahan kriteria
+     */
+    private function clearWPResults()
+    {
+        try {
+            DB::table('hasil_wp')->delete();
+            DB::table('detail_wp')->delete();
+        } catch (\Exception $e) {
+            // Log error jika diperlukan
+        }
+    }
+
+    /**
+     * Hitung bobot relatif untuk WP
+     */
+    public function getBobotRelatif()
+    {
+        $kriteria = $this->getAll();
+        $totalBobot = $kriteria->sum('bobot');
+        $bobotRelatif = [];
+
+        foreach ($kriteria as $item) {
+            $bobotRelatif[$item->id] = $totalBobot > 0 ? $item->bobot / $totalBobot : 0;
+        }
+
+        return $bobotRelatif;
+    }
+
+    /**
+     * Generate kode kriteria otomatis
+     */
+    public function generateKode()
+    {
+        $lastKriteria = $this->kriteria->orderBy('id', 'desc')->first();
+        if ($lastKriteria) {
+            $lastNumber = (int) substr($lastKriteria->kode, 1);
+            $newNumber = $lastNumber + 1;
+        } else {
+            $newNumber = 1;
+        }
+
+        return 'C' . $newNumber;
     }
 }

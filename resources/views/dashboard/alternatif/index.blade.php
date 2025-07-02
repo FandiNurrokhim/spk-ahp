@@ -38,30 +38,36 @@
                             style="width:100%; padding-top: 1em; padding-bottom: 1em;">
                             <thead class="text-xs text-gray-700 uppercase bg-gray-50">
                                 <tr>
+                                    <th scope="col" class="px-4 py-3">Kode</th>
                                     <th scope="col" class="px-4 py-3">Nama</th>
-                                    <th scope="col" class="px-4 py-3">NIS/NISN</th>
-                                    <th scope="col" class="px-4 py-3">Tanggal Lahir</th>
-                                    <th scope="col" class="px-4 py-3">Jenis Kelamin</th>
-                                    <th scope="col" class="px-4 py-3">Alamat</th>
+                                    @foreach($kriteria as $k)
+                                        <th scope="col" class="px-4 py-3">{{ $k->kode }}</th>
+                                    @endforeach
                                     <th scope="col" class="px-4 py-3">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @foreach ($data as $item)
                                     <tr class="border-b dark:border-gray-700">
+                                        <td class="px-4 py-3 font-semibold">{{ $item->kode }}</td>
                                         <td class="px-4 py-3">{{ $item->nama }}</td>
-                                        <td class="px-4 py-3">{{ $item->nisn }}</td>
-                                        <td class="px-4 py-3">{{ $item->tanggal_lahir }}</td>
-                                        <td class="px-4 py-3">{{ $item->jenis_kelamin }}</td>
-                                        <td class="px-4 py-3">{{ $item->alamat }}</td>
+                                        @foreach($kriteria as $k)
+                                            @php
+                                                $penilaian = DB::table('penilaian')
+                                                    ->where('alternatif_id', $item->id)
+                                                    ->where('kriteria_id', $k->id)
+                                                    ->first();
+                                            @endphp
+                                            <td class="px-4 py-3">{{ $penilaian ? $penilaian->nilai : 0 }}</td>
+                                        @endforeach
                                         <td class="px-4 py-3">
                                             <label for="edit_button" class="btn btn-sm btn-warning text-white"
                                                 onclick="return edit_button('{{ $item->id }}')">
-                                                <i class="ri-pencil-line"></i>edit
+                                                <i class="ri-pencil-line"></i>
                                             </label>
                                             <button class="btn btn-sm btn-error text-white"
                                                 onclick="return delete_button('{{ $item->id }}', '{{ $item->nama }}');">
-                                                <i class="ri-delete-bin-line"></i>hapus
+                                                <i class="ri-delete-bin-line"></i>
                                             </button>
                                         </td>
                                     </tr>
@@ -75,78 +81,66 @@
             {{-- Form Tambah Data --}}
             <input type="checkbox" id="add_button" class="modal-toggle" />
             <div class="modal">
-                <div class="modal-box">
+                <div class="modal-box max-w-4xl">
                     <form action="{{ route('alternatif.simpan') }}" method="post" enctype="multipart/form-data">
-                        <h3 class="font-bold text-lg">Tambah {{ $judul }}</h3>
+                        <h3 class="font-bold text-lg mb-4">Tambah {{ $judul }}</h3>
                         @csrf
-                        <div class="form-control w-full max-w-xs">
-                            <label class="label">
-                                <span class="label-text">Nama</span>
-                            </label>
-                            <input type="text" name="nama" placeholder="Type here"
-                                class="input input-bordered w-full max-w-xs text-gray-800" value="{{ old('nama') }}"
-                                required />
-                            <label class="label">
-                                @error('nama')
-                                    <span class="label-text-alt text-error">{{ $message }}</span>
-                                @enderror
-                            </label>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="form-control w-full">
+                                <label class="label">
+                                    <span class="label-text">Kode</span>
+                                </label>
+                                <input type="text" name="kode" placeholder="Type here"
+                                    class="input input-bordered w-full text-gray-800 bg-slate-100"
+                                    value="{{ $kode }}" readonly required />
+                                <label class="label">
+                                    @error('kode')
+                                        <span class="label-text-alt text-error">{{ $message }}</span>
+                                    @enderror
+                                </label>
+                            </div>
+                            
+                            <div class="form-control w-full">
+                                <label class="label">
+                                    <span class="label-text">Nama</span>
+                                </label>
+                                <input type="text" name="nama" placeholder="Masukkan nama alternatif"
+                                    class="input input-bordered w-full text-gray-800" value="{{ old('nama') }}"
+                                    required />
+                                <label class="label">
+                                    @error('nama')
+                                        <span class="label-text-alt text-error">{{ $message }}</span>
+                                    @enderror
+                                </label>
+                            </div>
                         </div>
-                        <div class="form-control w-full max-w-xs">
-                            <label class="label">
-                                <span class="label-text">NIS/NISN</span>
-                            </label>
-                            <input type="text" name="nisn" placeholder="Masukkan NIS/NISN"
-                                class="input input-bordered w-full max-w-xs text-gray-800" value="{{ old('nisn') }}"
-                                required />
-                            <label class="label">
-                                @error('nisn')
-                                    <span class="label-text-alt text-error">{{ $message }}</span>
-                                @enderror
-                            </label>
+
+                        <div class="divider">Nilai Kriteria</div>
+
+                        <div class="grid grid-cols-1 gap-4">
+                            @foreach($kriteria as $k)
+                                <div class="form-control w-full">
+                                    <label class="label">
+                                        <span class="label-text">{{ $k->kode }} - {{ $k->nama }}</span>
+                                        <span class="label-text-alt badge {{ $k->jenis == 'benefit' ? 'badge-success' : 'badge-error' }}">
+                                            {{ ucfirst($k->jenis) }}
+                                        </span>
+                                    </label>
+                                    <input type="number" name="kriteria[{{ $k->id }}]" 
+                                        placeholder="Masukkan nilai"
+                                        class="input input-bordered w-full text-gray-800" 
+                                        value="{{ old('kriteria.'.$k->id, 0) }}"
+                                        min="0" step="0.01" required />
+                                    <label class="label">
+                                        @error('kriteria.'.$k->id)
+                                            <span class="label-text-alt text-error">{{ $message }}</span>
+                                        @enderror
+                                    </label>
+                                </div>
+                            @endforeach
                         </div>
-                        <div class="form-control w-full max-w-xs">
-                            <label class="label">
-                                <span class="label-text">Tanggal Lahir</span>
-                            </label>
-                            <input type="date" name="tanggal_lahir"
-                                class="input input-bordered w-full max-w-xs text-gray-800"
-                                value="{{ old('tanggal_lahir') }}" max="{{ date('Y-m-d') }}" required />
-                            <label class="label">
-                                @error('tanggal_lahir')
-                                    <span class="label-text-alt text-error">{{ $message }}</span>
-                                @enderror
-                            </label>
-                        </div>
-                        <div class="form-control w-full max-w-xs">
-                            <label class="label">
-                                <span class="label-text">Jenis Kelamin</span>
-                            </label>
-                            <select name="jenis_kelamin" class="select select-bordered w-full max-w-xs" required>
-                                <option value="">-- Pilih Jenis Kelamin --</option>
-                                <option value="Laki-laki" {{ old('jenis_kelamin') == 'Laki-laki' ? 'selected' : '' }}>
-                                    Laki-laki</option>
-                                <option value="Perempuan" {{ old('jenis_kelamin') == 'Perempuan' ? 'selected' : '' }}>
-                                    Perempuan</option>
-                            </select>
-                            <label class="label">
-                                @error('jenis_kelamin')
-                                    <span class="label-text-alt text-error">{{ $message }}</span>
-                                @enderror
-                            </label>
-                        </div>
-                        <div class="form-control w-full max-w-xs">
-                            <label class="label">
-                                <span class="label-text">Alamat</span>
-                            </label>
-                            <textarea name="alamat" class="textarea textarea-bordered w-full max-w-xs text-gray-800"
-                                placeholder="Masukkan alamat" required>{{ old('alamat') }}</textarea>
-                            <label class="label">
-                                @error('alamat')
-                                    <span class="label-text-alt text-error">{{ $message }}</span>
-                                @enderror
-                            </label>
-                        </div>
+
                         <div class="modal-action">
                             <button type="submit" class="btn btn-success">Simpan</button>
                             <label for="add_button" class="btn">Batal</label>
@@ -159,78 +153,62 @@
             {{-- Form Ubah Data --}}
             <input type="checkbox" id="edit_button" class="modal-toggle" />
             <div class="modal">
-                <div class="modal-box" id="edit_form">
+                <div class="modal-box max-w-4xl" id="edit_form">
                     <form action="{{ route('alternatif.perbarui') }}" method="post" enctype="multipart/form-data">
-                        <h3 class="font-bold text-lg">Ubah {{ $judul }}: <span class="text-greenPrimary"
+                        <h3 class="font-bold text-lg mb-4">Ubah {{ $judul }}: <span class="text-greenPrimary"
                                 id="title_form"><span class="loading loading-dots loading-md"></span></span></h3>
                         @csrf
                         <input type="text" name="id" hidden />
-                        <div class="form-control w-full max-w-xs">
-                            <label class="label">
-                                <span class="label-text">Nama</span>
-                                <span class="label-text-alt" id="loading_edit1"></span>
-                            </label>
-                            <input type="text" name="nama" placeholder="Type here"
-                                class="input input-bordered w-full text-gray-800" required />
-                            <label class="label">
-                                @error('nama')
-                                    <span class="label-text-alt text-error">{{ $message }}</span>
-                                @enderror
-                            </label>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="form-control w-full">
+                                <label class="label">
+                                    <span class="label-text">Kode</span>
+                                    <span class="label-text-alt" id="loading_edit1"></span>
+                                </label>
+                                <input type="text" name="kode" placeholder="Type here"
+                                    class="input input-bordered w-full text-gray-800" required />
+                                <label class="label">
+                                    @error('kode')
+                                        <span class="label-text-alt text-error">{{ $message }}</span>
+                                    @enderror
+                                </label>
+                            </div>
+                            
+                            <div class="form-control w-full">
+                                <label class="label">
+                                    <span class="label-text">Nama</span>
+                                    <span class="label-text-alt" id="loading_edit2"></span>
+                                </label>
+                                <input type="text" name="nama" placeholder="Masukkan nama alternatif"
+                                    class="input input-bordered w-full text-gray-800" required />
+                                <label class="label">
+                                    @error('nama')
+                                        <span class="label-text-alt text-error">{{ $message }}</span>
+                                    @enderror
+                                </label>
+                            </div>
                         </div>
-                        <div class="form-control w-full max-w-xs">
-                            <label class="label">
-                                <span class="label-text">NIS/NISN</span>
-                            </label>
-                            <input type="text" name="nisn" placeholder="Masukkan NIS/NISN"
-                                class="input input-bordered w-full text-gray-800" required />
-                            <label class="label">
-                                @error('nisn')
-                                    <span class="label-text-alt text-error">{{ $message }}</span>
-                                @enderror
-                            </label>
+
+                        <div class="divider">Nilai Kriteria</div>
+
+                        <div class="grid grid-cols-1 gap-4" id="kriteria_edit">
+                            @foreach($kriteria as $k)
+                                <div class="form-control w-full">
+                                    <label class="label">
+                                        <span class="label-text">{{ $k->kode }} - {{ $k->nama }}</span>
+                                        <span class="label-text-alt badge {{ $k->jenis == 'benefit' ? 'badge-success' : 'badge-error' }}">
+                                            {{ ucfirst($k->jenis) }}
+                                        </span>
+                                    </label>
+                                    <input type="number" name="kriteria[{{ $k->id }}]" 
+                                        placeholder="Masukkan nilai"
+                                        class="input input-bordered w-full text-gray-800" 
+                                        min="0" step="0.01" required />
+                                </div>
+                            @endforeach
                         </div>
-                        <div class="form-control w-full max-w-xs">
-                            <label class="label">
-                                <span class="label-text">Tanggal Lahir</span>
-                            </label>
-                            <input type="date" name="tanggal_lahir" class="input input-bordered w-full text-gray-800"
-                                max="{{ date('Y-m-d') }}" required />
-                            <label class="label">
-                                @error('tanggal_lahir')
-                                    <span class="label-text-alt text-error">{{ $message }}</span>
-                                @enderror
-                            </label>
-                        </div>
-                        <div class="form-control w-full max-w-xs">
-                            <label class="label">
-                                <span class="label-text">Jenis Kelamin</span>
-                            </label>
-                            <select name="jenis_kelamin" class="select select-bordered w-full" required>
-                                <option value="">-- Pilih Jenis Kelamin --</option>
-                                <option value="Laki-laki" {{ old('jenis_kelamin') == 'Laki-laki' ? 'selected' : '' }}>
-                                    Laki-laki</option>
-                                <option value="Perempuan" {{ old('jenis_kelamin') == 'Perempuan' ? 'selected' : '' }}>
-                                    Perempuan</option>
-                            </select>
-                            <label class="label">
-                                @error('jenis_kelamin')
-                                    <span class="label-text-alt text-error">{{ $message }}</span>
-                                @enderror
-                            </label>
-                        </div>
-                        <div class="form-control w-full max-w-xs">
-                            <label class="label">
-                                <span class="label-text">Alamat</span>
-                            </label>
-                            <textarea name="alamat" class="textarea textarea-bordered w-full text-gray-800" placeholder="Masukkan alamat"
-                                required></textarea>
-                            <label class="label">
-                                @error('alamat')
-                                    <span class="label-text-alt text-error">{{ $message }}</span>
-                                @enderror
-                            </label>
-                        </div>
+
                         <div class="modal-action">
                             <button type="submit" class="btn btn-success">Perbarui</button>
                             <label for="edit_button" class="btn">Batal</label>
@@ -239,6 +217,7 @@
                 </div>
                 <label class="modal-backdrop" for="edit_button">Close</label>
             </div>
+
             {{-- Import Data --}}
             <input type="checkbox" id="import_button" class="modal-toggle" />
             <div class="modal">
@@ -293,10 +272,10 @@
             });
         @endif
 
-        @if ($errors->any())
+        @if (session()->has('gagal'))
             Swal.fire({
                 title: 'Gagal',
-                text: `{!! implode('\n', $errors->all()) !!}`,
+                text: '{{ session('gagal') }}',
                 icon: 'error',
                 confirmButtonColor: '#6419E6',
                 confirmButtonText: 'OK',
@@ -316,10 +295,10 @@
         @endif
 
         window.edit_button = function(id) {
-            // Loading effect start
             let loading = `<span class="loading loading-dots loading-md text-purple-600"></span>`;
             $("#title_form").html(loading);
             $("#loading_edit1").html(loading);
+            $("#loading_edit2").html(loading);
 
             $.ajax({
                 type: "get",
@@ -329,22 +308,20 @@
                     "id": id
                 },
                 success: function(data) {
-                    let items = [];
-                    $.each(data, function(key, val) {
-                        items.push(val);
-                    });
+                    $("#title_form").html(data.nama);
+                    $("input[name='id']").val(data.id);
+                    $("input[name='kode']").val(data.kode);
+                    $("input[name='nama']").val(data.nama);
 
-                    $("#title_form").html(`${items[1]}`);
-                    $("input[name='id']").val(items[0]);
-                    $("input[name='nama']").val(items[1]);
-                    $("input[name='nisn']").val(items[2]);
-                    $("input[name='tanggal_lahir']").val(items[3]);
-                    $("select[name='jenis_kelamin']").val(items[4]);
-                    $("textarea[name='alamat']").val(items[5]);
+                    // Set nilai untuk setiap kriteria
+                    if(data.penilaian) {
+                        Object.keys(data.penilaian).forEach(function(kriteria_id) {
+                            $(`input[name='kriteria[${kriteria_id}]']`).val(data.penilaian[kriteria_id]);
+                        });
+                    }
 
-                    // Loading effect end
-                    loading = "";
-                    $("#loading_edit1").html(loading);
+                    $("#loading_edit1").html("");
+                    $("#loading_edit2").html("");
                 }
             });
         }

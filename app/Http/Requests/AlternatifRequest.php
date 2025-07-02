@@ -24,12 +24,40 @@ class AlternatifRequest extends FormRequest
     public function rules()
     {
         $id = $this->id ?? null;
-        return [
+        $rules = [
+            'kode' => 'required|string|max:10',
             'nama' => 'required|string|max:255',
-            'nisn' => 'required|string|max:20|unique:alternatif,nisn,' . $id,
-            'jenis_kelamin' => 'required|in:Laki-laki,Perempuan',
-            'tanggal_lahir' => 'required|date_format:Y-m-d',
-            'alamat' => 'required|string|max:255',
         ];
+
+        // Validasi untuk setiap kriteria
+        $kriteria = \App\Models\Kriteria::all();
+        foreach ($kriteria as $k) {
+            $rules["kriteria.{$k->id}"] = 'required|numeric|min:0';
+        }
+
+        return $rules;
+    }
+
+    /**
+     * Get custom messages for validator errors.
+     *
+     * @return array
+     */
+    public function messages()
+    {
+        $messages = [
+            'kode.required' => 'Kode alternatif harus diisi',
+            'nama.required' => 'Nama alternatif harus diisi',
+        ];
+
+        // Custom messages untuk setiap kriteria
+        $kriteria = \App\Models\Kriteria::all();
+        foreach ($kriteria as $k) {
+            $messages["kriteria.{$k->id}.required"] = "Nilai untuk {$k->kode} harus diisi";
+            $messages["kriteria.{$k->id}.numeric"] = "Nilai untuk {$k->kode} harus berupa angka";
+            $messages["kriteria.{$k->id}.min"] = "Nilai untuk {$k->kode} minimal 0";
+        }
+
+        return $messages;
     }
 }

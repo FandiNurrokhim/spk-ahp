@@ -35,11 +35,34 @@ class AlternatifRepository
 
     public function simpan($data)
     {
-        $data = $this->alternatif->create($data);
-        $this->add_penilaian_alternatif();
-        return $data;
-    }
+        // Simpan data alternatif
+        $alternatif = $this->alternatif->create([
+            'kode' => $data['kode'],
+            'nama' => $data['nama']
+        ]);
 
+        // Simpan nilai untuk setiap kriteria
+        if (isset($data['kriteria'])) {
+            foreach ($data['kriteria'] as $kriteria_id => $nilai) {
+                DB::table('penilaian')->updateOrInsert(
+                    [
+                        'alternatif_id' => $alternatif->id,
+                        'kriteria_id' => $kriteria_id
+                    ],
+                    [
+                        'nilai' => $nilai,
+                        'created_at' => Carbon::now(),
+                        'updated_at' => Carbon::now(),
+                    ]
+                );
+            }
+        }
+
+        // Hitung dan simpan hasil WP
+        $this->hitungDanSimpanWP();
+
+        return $alternatif;
+    }
 
     public function import($data)
     {
@@ -60,9 +83,12 @@ class AlternatifRepository
             }
     
             $this->add_penilaian_alternatif();
+            
+            // Hitung dan simpan hasil WP setelah import
+            $this->hitungDanSimpanWP();
+            
             return ['success' => true];
         } catch (\Exception $e) {
-            // Exception dari throw di model() akan masuk sini
             return [
                 'success' => false,
                 'message' => $e->getMessage(),
@@ -76,11 +102,13 @@ class AlternatifRepository
         $kriteria = $this->kriteria->all();
         foreach ($alternatif as $item) {
             foreach ($kriteria as $value) {
-                $penilaian = $this->penilaian->where('alternatif_id', $item->id)->where('kriteria_id', $value->id)->first();
+                $penilaian = $this->penilaian->where('alternatif_id', $item->id)
+                    ->where('kriteria_id', $value->id)->first();
                 if ($penilaian == null) {
                     DB::table('penilaian')->insert([
                         'alternatif_id' => $item->id,
                         'kriteria_id' => $value->id,
+                        'nilai' => 0,
                         'created_at' => Carbon::now(),
                         'updated_at' => Carbon::now(),
                     ]);
@@ -92,28 +120,240 @@ class AlternatifRepository
     public function getDataById($id)
     {
         $data = $this->alternatif->where('id', $id)->firstOrFail();
-        return $data;
+        
+        // Ambil nilai penilaian untuk setiap kriteria
+        $penilaian = DB::table('penilaian')
+            ->where('alternatif_id', $id)
+            ->pluck('nilai', 'kriteria_id')
+            ->toArray();
+
+        return [
+            'id' => $data->id,
+            'kode' => $data->kode,
+            'nama' => $data->nama,
+            'penilaian' => $penilaian
+        ];
     }
 
     public function perbarui($id, $data)
     {
-        $data = $this->alternatif->where('id', $id)->update([
-            "nama" => $data['nama'],
-            'nisn' => $data['nisn'],
-            'tanggal_lahir' => $data['tanggal_lahir'],
-            'jenis_kelamin' => $data['jenis_kelamin'],
-            'alamat' => $data['alamat'],
+        // Update data alternatif
+        $this->alternatif->where('id', $id)->update([
+            'kode' => $data['kode'],
+            'nama' => $data['nama']
         ]);
-        return $data;
+
+        // Update nilai untuk setiap kriteria
+        if (isset($data['kriteria'])) {
+            foreach ($data['kriteria'] as $kriteria_id => $nilai) {
+                DB::table('penilaian')->updateOrInsert(
+                    [
+                        'alternatif_id' => $id,
+                        'kriteria_id' => $kriteria_id
+                    ],
+                    [
+                        'nilai' => $nilai,
+                        'updated_at' => Carbon::now(),
+                    ]
+                );
+            }
+        }
+
+        // Hitung ulang dan simpan hasil WP
+        $this->hitungDanSimpanWP();
+
+        return true;
     }
 
     public function hapus($id)
     {
-        $data = [
-            DB::table('hasil_solusi_ahp')->where('alternatif_id', $id)->delete(),
-            $this->penilaian->where('alternatif_id', $id)->delete(),
-            $this->alternatif->where('id', $id)->delete(),
-        ];
-        return $data;
+        try {
+            // Hapus penilaian terkait
+            $this->penilaian->where('alternatif_id', $id)->delete();
+            
+            // Hapus hasil WP terkait
+            DB::table('hasil_wp')->where('alternatif_id', $id)->delete();
+            DB::table('detail_wp')->where('alternatif_id', $id)->delete();
+            
+            // Hapus alternatif
+            $this->alternatif->where('id', $id)->delete();
+
+            // Hitung ulang hasil WP untuk alternatif yang tersisa
+            $this->hitungDanSimpanWP();
+
+            return ['success' => true];
+        } catch (\Exception $e) {
+            return ['success' => false, 'message' => $e->getMessage()];
+        }
+    }
+
+    /**
+     * Hitung Vektor S dan V dengan metode logaritma untuk stabilitas numerik
+     */
+    private function hitungDanSimpanWP()
+    {
+        try {
+            // Hapus hasil WP yang lama
+            DB::table('hasil_wp')->delete();
+            DB::table('detail_wp')->delete();
+
+            $alternatif = $this->getAll();
+            $kriteria = $this->kriteria->all();
+
+            if ($alternatif->isEmpty() || $kriteria->isEmpty()) {
+                return;
+            }
+
+            // Hitung bobot relatif
+            $totalBobot = $kriteria->sum('bobot');
+            $bobotRelatif = [];
+            foreach ($kriteria as $k) {
+                $bobot = $totalBobot > 0 ? $k->bobot / $totalBobot : 0;
+                // Jika cost, buat negatif
+                if ($k->jenis == 'cost') {
+                    $bobot = -$bobot;
+                }
+                $bobotRelatif[$k->id] = $bobot;
+            }
+
+            $vektorS = [];
+            $totalS = 0;
+
+            // Hitung Vektor S untuk setiap alternatif menggunakan logaritma
+            foreach ($alternatif as $alt) {
+                $logS = 0; // Gunakan logaritma untuk stabilitas numerik
+                
+                foreach ($kriteria as $k) {
+                    $penilaian = DB::table('penilaian')
+                        ->where('alternatif_id', $alt->id)
+                        ->where('kriteria_id', $k->id)
+                        ->first();
+                    
+                    $nilai = $penilaian ? floatval($penilaian->nilai) : 1; // Gunakan 1 jika 0 untuk menghindari log(0)
+                    $pangkat = $bobotRelatif[$k->id];
+                    
+                    // Pastikan nilai > 0 untuk logaritma
+                    if ($nilai <= 0) {
+                        $nilai = 0.0001; // Nilai kecil untuk menggantikan 0
+                    }
+                    
+                    // Gunakan logaritma: log(a^b) = b * log(a)
+                    $logS += $pangkat * log($nilai);
+
+                    // Simpan detail perhitungan
+                    $hasilPow = pow($nilai, $pangkat);
+                    DB::table('detail_wp')->insert([
+                        'alternatif_id' => $alt->id,
+                        'kriteria_id' => $k->id,
+                        'nilai' => $penilaian ? $penilaian->nilai : 0,
+                        'bobot' => $pangkat,
+                        'hasil' => $hasilPow,
+                        'created_at' => Carbon::now(),
+                        'updated_at' => Carbon::now(),
+                    ]);
+                }
+
+                // Konversi kembali dari logaritma ke nilai asli
+                $s = exp($logS);
+                $vektorS[$alt->id] = $s;
+                $totalS += $s;
+            }
+
+            // Hitung Vektor V dan simpan hasil
+            foreach ($alternatif as $alt) {
+                $v = $totalS > 0 ? $vektorS[$alt->id] / $totalS : 0;
+
+                DB::table('hasil_wp')->insert([
+                    'alternatif_id' => $alt->id,
+                    'vektor_s' => $vektorS[$alt->id],
+                    'vektor_v' => $v,
+                    'ranking' => 0, // Akan diupdate setelah semua data tersimpan
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now(),
+                ]);
+            }
+
+            // Update ranking berdasarkan vektor V
+            $this->updateRanking();
+
+        } catch (\Exception $e) {
+            // Log error jika diperlukan
+            \Log::error('Error in hitungDanSimpanWP: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Update ranking berdasarkan vektor V
+     */
+    private function updateRanking()
+    {
+        $hasil = DB::table('hasil_wp')
+            ->orderBy('vektor_v', 'desc')
+            ->get();
+
+        $rank = 1;
+        foreach ($hasil as $item) {
+            DB::table('hasil_wp')
+                ->where('id', $item->id)
+                ->update(['ranking' => $rank]);
+            $rank++;
+        }
+    }
+
+    /**
+     * Generate kode alternatif otomatis
+     */
+    public function generateKode()
+    {
+        $lastAlternatif = $this->alternatif->orderBy('id', 'desc')->first();
+        if ($lastAlternatif) {
+            $lastNumber = (int) preg_replace('/[^0-9]/', '', $lastAlternatif->kode);
+            $newNumber = $lastNumber + 1;
+        } else {
+            $newNumber = 1;
+        }
+
+        return 'A' . $newNumber;
+    }
+
+    /**
+     * Debug: Tampilkan perhitungan manual untuk verifikasi
+     */
+    public function debugWP()
+    {
+        $alternatif = $this->getAll();
+        $kriteria = $this->kriteria->all();
+        
+        echo "<h3>Debug Perhitungan WP</h3>";
+        
+        // Tampilkan data matriks
+        echo "<table border='1'>";
+        echo "<tr><th>Alternatif</th>";
+        foreach ($kriteria as $k) {
+            echo "<th>{$k->kode}</th>";
+        }
+        echo "</tr>";
+        
+        foreach ($alternatif as $alt) {
+            echo "<tr><td>{$alt->kode}</td>";
+            foreach ($kriteria as $k) {
+                $penilaian = DB::table('penilaian')
+                    ->where('alternatif_id', $alt->id)
+                    ->where('kriteria_id', $k->id)
+                    ->first();
+                echo "<td>" . ($penilaian ? $penilaian->nilai : 0) . "</td>";
+            }
+            echo "</tr>";
+        }
+        echo "</table>";
+        
+        // Tampilkan bobot
+        echo "<h4>Bobot Relatif:</h4>";
+        $totalBobot = $kriteria->sum('bobot');
+        foreach ($kriteria as $k) {
+            $bobot = $k->bobot / $totalBobot;
+            if ($k->jenis == 'cost') $bobot = -$bobot;
+            echo "{$k->kode}: " . number_format($bobot, 9) . "<br>";
+        }
     }
 }

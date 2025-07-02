@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Requests\AlternatifRequest;
 use App\Http\Services\AlternatifService;
+use App\Models\Kriteria;
 
 class AlternatifController extends Controller
 {
@@ -20,8 +21,16 @@ class AlternatifController extends Controller
     {
         $judul = 'Alternatif';
         $data = $this->alternatifService->getAll();
+        $kriteria = Kriteria::get();
 
-        return view('dashboard.alternatif.index', compact('judul', 'data'));
+        if ($data->last()) {
+            $lastNumber = (int) substr($data->last()->kode, 1);
+            $kode = "A" . ($lastNumber + 1);
+        } else {
+            $kode = "A1";
+        }
+
+        return view('dashboard.alternatif.index', compact('judul', 'data', 'kriteria', 'kode'));
     }
 
     public function simpan(AlternatifRequest $request)
@@ -83,7 +92,7 @@ class AlternatifController extends Controller
         if (isset($result['success']) && !$result['success']) {
             // Hilangkan &#039; dari pesan error
             $message = str_replace("&#039;", "'", $result['message']);
-            $message = str_replace("'", "", $message); 
+            $message = str_replace("'", "", $message);
             return redirect('dashboard/alternatif')->with('gagal', $message);
         }
         // Jika sukses

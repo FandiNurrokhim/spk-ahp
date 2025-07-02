@@ -18,14 +18,15 @@ class DashboardController extends Controller
         $kategori = Kategori::get()->count();
         $alternatif = Alternatif::get();
 
-        $hasilSolusi = DB::table('hasil_solusi_ahp as hsa')
-            ->join('alternatif as a', 'a.id', '=', 'hsa.alternatif_id')
-            ->select('hsa.*', 'a.nama as nama_alternatif')
+        // Ganti dari hasil_solusi_ahp ke hasil_wp
+        $hasilSolusi = DB::table('hasil_wp as hw')
+            ->join('alternatif as a', 'a.id', '=', 'hw.alternatif_id')
+            ->select('hw.*', 'a.nama as nama_alternatif', 'a.kode')
+            ->orderBy('hw.ranking', 'asc')
             ->get();
-
         $hasilNilaiData = '';
         foreach ($hasilSolusi as $item) {
-            $hasilNilaiData .= number_format($item->nilai, 3) . ", ";
+            $hasilNilaiData .= number_format($item->nilai_v, 6) . ", ";
         }
         $hasilNilaiData = rtrim($hasilNilaiData, ", ");
 

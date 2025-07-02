@@ -6,217 +6,286 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Services\KriteriaService;
+use App\Models\Alternatif;
+use App\Models\Kriteria;
 
 class AHPController extends Controller
 {
-    protected $kriteriaService, $kategoriService;
+    protected $kriteriaService;
 
     public function __construct(KriteriaService $kriteriaService)
     {
         $this->kriteriaService = $kriteriaService;
     }
 
+    // Method utama untuk WP
     public function index_perhitungan_utama()
     {
-        if ($this->kriteriaService->getAll()->count() < 3) {
-            return redirect('dashboard/kriteria')->with('gagal', "Kriteria harus lebih dari sama dengan 3!");
+        if ($this->kriteriaService->getAll()->count() < 2) {
+            return redirect('dashboard/kriteria')->with('gagal', "Kriteria harus lebih dari sama dengan 2!");
         }
 
-        $judul = 'Perbandingan Kriteria';
+        $judul = 'Perhitungan Weighted Product';
 
         $kriteria = $this->kriteriaService->getAll();
-        $matriksPerbandingan = DB::table('matriks_perbandingan_utama as mpu')
-            ->join('kriteria as k', 'k.id', '=', 'mpu.kriteria_id')
-            ->select('mpu.*', 'k.id as kriteria_id', 'k.nama as nama_kriteria')
-            ->orderBy('mpu.kriteria_id', 'asc')
-            ->orderBy('mpu.kriteria_id_banding', 'asc') 
-            ->get();
+        $alternatif = Alternatif::orderBy('kode', 'asc')->get();
 
-        $matriksNilai = DB::table('matriks_nilai_utama as mnu')
-            ->join('kriteria as k', 'k.id', '=', 'mnu.kriteria_id')
-            ->select('mnu.*', 'k.id as kriteria_id', 'k.nama as nama_kriteria')
-            ->get();
+        // Pastikan ada data alternatif
+        if ($alternatif->isEmpty()) {
+            return redirect('dashboard/alternatif')->with('gagal', "Belum ada data alternatif!");
+        }
 
-        $matriksPenjumlahan = DB::table('matriks_penjumlahan_utama as mpu')
-            ->join('kriteria as k', 'k.id', '=', 'mpu.kriteria_id')
-            ->select('mpu.*', 'k.id as kriteria_id', 'k.nama as nama_kriteria')
-            ->get();
+        // Hitung bobot relatif (wj)
+        $bobotRelatif = $this->hitungBobotRelatif($kriteria);
 
-        $matriksPenjumlahanPrioritas = DB::table('matriks_penjumlahan_prioritas_utama')->get();
-        $IR = DB::table('index_random_consistency')->where('ukuran_matriks', $kriteria->count())->first()->nilai;
+        // Hitung pangkat (untuk cost = negatif)
+        $pangkat = $this->hitungPangkat($kriteria, $bobotRelatif);
 
-        // dd($matriksNilai->where('kriteria_id', $kriteria->last()->id)->first());
+        // Ambil data matriks alternatif vs kriteria
+        $matriks = $this->getMatriksAlternatifKriteria($alternatif, $kriteria);
+
+        // Hitung nilai S (vektor S)
+        $nilaiS = $this->hitungNilaiS($alternatif, $kriteria, $pangkat);
+
+        // Hitung nilai V (preferensi relatif)
+        $nilaiV = $this->hitungNilaiV($nilaiS);
+
+        // Ranking
+        $ranking = $this->hitungRanking($nilaiV);
 
         return view('dashboard.perhitungan_utama.index', [
             'judul' => $judul,
             'kriteria' => $kriteria,
-            'matriksPerbandingan' => $matriksPerbandingan,
-            'matriksNilai' => $matriksNilai,
-            'matriksPenjumlahan' => $matriksPenjumlahan,
-            'matriksPenjumlahanPrioritas' => $matriksPenjumlahanPrioritas,
-            'IR' => $IR,
+            'alternatif' => $alternatif,
+            'bobotRelatif' => $bobotRelatif,
+            'pangkat' => $pangkat,
+            'matriks' => $matriks,
+            'nilaiS' => $nilaiS,
+            'nilaiV' => $nilaiV,
+            'ranking' => $ranking,
         ]);
     }
 
-    public function ubah_matriks_perbandingan_utama(Request $request)
+    // Hitung bobot relatif (wj)
+    private function hitungBobotRelatif($kriteria)
     {
-        $namaKriteria = $this->kriteriaService->getDataById($request->kriteria_id);
-        $judul = 'Matriks Perbandingan Utama:';
+        $totalBobot = $kriteria->sum('bobot');
+        $bobotRelatif = [];
 
-        $matriksPerbandingan = DB::table('matriks_perbandingan_utama as mpu')
-            ->join('kriteria as k', 'k.id', '=', 'mpu.kriteria_id')
-            ->where('mpu.kriteria_id', '=', $request->kriteria_id)
-            ->select('mpu.*', 'k.id as kriteria_id', 'k.nama as nama_kriteria')
-            ->get();
+        foreach ($kriteria as $k) {
+            $bobotRelatif[$k->id] = $totalBobot > 0 ? round($k->bobot / $totalBobot, 9) : 0;
+        }
 
-        foreach ($matriksPerbandingan as $mp) {
-            foreach ($this->kriteriaService->getAll() as $kriteria) {
-                if ($mp->kriteria_id_banding == $kriteria->id) {
-                    $mp->nama_kriteria_banding = $kriteria->nama;
-                    break;
-                }
+        return $bobotRelatif;
+    }
+
+    // Hitung pangkat (cost = negatif)
+    private function hitungPangkat($kriteria, $bobotRelatif)
+    {
+        $pangkat = [];
+
+        foreach ($kriteria as $k) {
+            $bobot = $bobotRelatif[$k->id];
+            
+            if ($k->jenis == 'cost') {
+                $bobot = -$bobot;
+            }
+
+            $pangkat[$k->id] = $bobot;
+        }
+
+        return $pangkat;
+    }
+
+    // Get matriks alternatif vs kriteria
+    private function getMatriksAlternatifKriteria($alternatif, $kriteria)
+    {
+        $matriks = [];
+
+        foreach ($alternatif as $alt) {
+            $matriks[$alt->id] = [];
+            
+            foreach ($kriteria as $krit) {
+                $penilaian = DB::table('penilaian')
+                    ->where('alternatif_id', $alt->id)
+                    ->where('kriteria_id', $krit->id)
+                    ->first();
+
+                $matriks[$alt->id][$krit->id] = $penilaian ? floatval($penilaian->nilai) : 0;
             }
         }
 
-        return view('dashboard.perhitungan_utama.ubahMatriksPerbandingan', [
-            'judul' => $judul,
-            'namaKriteria' => $namaKriteria,
-            'matriksPerbandingan' => $matriksPerbandingan,
-        ]);
+        return $matriks;
     }
 
-    public function matriks_utama()
+    // Hitung Vektor S
+    private function hitungNilaiS($alternatif, $kriteria, $pangkat)
     {
-        $this->matriks_nilai_utama();
-        $this->matriks_penjumlahan_utama();
+        $nilaiS = [];
 
-        return redirect('dashboard/kriteria/perhitungan_utama')->with('berhasil', ["Perhitungan matriks utama berhasil!", 0]);
+        foreach ($alternatif as $alt) {
+            $s = 1;
+
+            foreach ($kriteria as $krit) {
+                // Ambil nilai alternatif untuk kriteria ini
+                $penilaian = DB::table('penilaian')
+                    ->where('alternatif_id', $alt->id)
+                    ->where('kriteria_id', $krit->id)
+                    ->first();
+
+                if ($penilaian && $penilaian->nilai > 0) {
+                    $nilai = floatval($penilaian->nilai);
+                    $bobotPangkat = $pangkat[$krit->id];
+
+                    // S_i = S_i * (X_ij^wj)
+                    $s *= pow($nilai, $bobotPangkat);
+                }
+            }
+
+            $nilaiS[$alt->id] = $s;
+        }
+
+        return $nilaiS;
     }
 
-    public function matriks_perbandingan_utama(Request $request)
+    // Hitung Vektor V (preferensi relatif)
+    private function hitungNilaiV($nilaiS)
     {
-        foreach ($this->kriteriaService->getAll() as $value => $item) {
-            $nilai = (float) $request->post()[$item->id];
+        $totalS = array_sum($nilaiS);
+        $nilaiV = [];
 
-            // Bulatkan ke 3 angka desimal
-            $nilai = round($nilai, 3);
+        foreach ($nilaiS as $altId => $s) {
+            $nilaiV[$altId] = $totalS > 0 ? round($s / $totalS, 9) : 0;
+        }
 
-            // Update nilai utama
-            DB::table('matriks_perbandingan_utama')
-                ->where('kriteria_id', $request->kriteria_id)
-                ->where('kriteria_id_banding', $item->id)
-                ->update([
-                    'nilai' => $nilai,
+        return $nilaiV;
+    }
+
+    // Hitung ranking berdasarkan nilai V
+    private function hitungRanking($nilaiV)
+    {
+        // Urutkan nilai V dari tertinggi ke terendah
+        arsort($nilaiV);
+
+        $ranking = [];
+        $rank = 1;
+
+        foreach ($nilaiV as $altId => $v) {
+            $ranking[$altId] = $rank++;
+        }
+
+        return $ranking;
+    }
+
+    // Simpan hasil WP ke database
+    // Simpan hasil WP ke database
+    public function simpanHasilWP()
+    {
+        try {
+            $kriteria = $this->kriteriaService->getAll();
+            $alternatif = Alternatif::all();
+    
+            if ($kriteria->isEmpty() || $alternatif->isEmpty()) {
+                return redirect()->back()->with('gagal', 'Data kriteria atau alternatif tidak tersedia!');
+            }
+    
+            // Hitung semua nilai
+            $bobotRelatif = $this->hitungBobotRelatif($kriteria);
+            $pangkat = $this->hitungPangkat($kriteria, $bobotRelatif);
+            $nilaiS = $this->hitungNilaiS($alternatif, $kriteria, $pangkat);
+            $nilaiV = $this->hitungNilaiV($nilaiS);
+            $ranking = $this->hitungRanking($nilaiV);
+    
+            // Hapus hasil sebelumnya
+            DB::table('hasil_wp')->delete();
+            DB::table('detail_wp')->delete();
+    
+            // Simpan hasil ke database
+            foreach ($alternatif as $alt) {
+                DB::table('hasil_wp')->insert([
+                    'alternatif_id' => $alt->id,
+                    'vektor_s' => $nilaiS[$alt->id],    // Ganti dari 'nilai_s'
+                    'vektor_v' => $nilaiV[$alt->id],    // Ganti dari 'nilai_v'
+                    'ranking' => $ranking[$alt->id],
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now(),
                 ]);
-
-            // Update nilai resiprokalnya
-            DB::table('matriks_perbandingan_utama')
-                ->where('kriteria_id', $item->id)
-                ->where('kriteria_id_banding', $request->kriteria_id)
-                ->update([
-                    'nilai' => round(1 / $nilai, 3),
-                ]);
+    
+                // Simpan detail perhitungan per kriteria
+                foreach ($kriteria as $krit) {
+                    $penilaian = DB::table('penilaian')
+                        ->where('alternatif_id', $alt->id)
+                        ->where('kriteria_id', $krit->id)
+                        ->first();
+    
+                    $nilai = $penilaian ? floatval($penilaian->nilai) : 0;
+                    $bobotPangkat = $pangkat[$krit->id];
+                    $hasil = $nilai > 0 ? pow($nilai, $bobotPangkat) : 0;
+    
+                    DB::table('detail_wp')->insert([
+                        'alternatif_id' => $alt->id,
+                        'kriteria_id' => $krit->id,
+                        'nilai' => $nilai,               // Kolom ini harus ada di tabel
+                        'bobot' => $bobotPangkat,        // Kolom ini harus ada di tabel
+                        'hasil' => $hasil,               // Kolom ini harus ada di tabel
+                        'created_at' => Carbon::now(),
+                        'updated_at' => Carbon::now(),
+                    ]);
+                }
+            }
+    
+            return redirect('dashboard/kriteria/perhitungan_utama')->with('berhasil', 'Perhitungan Weighted Product berhasil disimpan!');
+    
+        } catch (\Exception $e) {
+            return redirect()->back()->with('gagal', 'Terjadi kesalahan: ' . $e->getMessage());
         }
+    }
+    
+    // Method untuk refresh/hitung ulang
+    public function hitungUlang()
+    {
+        return $this->simpanHasilWP();
+    }
 
+    // Method untuk export hasil (opsional)
+    public function exportHasil()
+    {
+        try {
+            $hasil = DB::table('hasil_wp')
+                ->join('alternatif', 'hasil_wp.alternatif_id', '=', 'alternatif.id')
+                ->select('alternatif.kode', 'alternatif.nama', 'hasil_wp.*')
+                ->orderBy('ranking', 'asc')
+                ->get();
 
-        return redirect('dashboard/kriteria/perhitungan_utama')->with('berhasil', [
-            "Matriks Perbandingan berhasil ditambahkan!",
-            $this->kriteriaService->getDataById($request->kriteria_id)->nama
+            return response()->json([
+                'success' => true,
+                'data' => $hasil
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ]);
+        }
+    }
+
+    // Debug method untuk troubleshooting
+    public function debug()
+    {
+        $kriteria = $this->kriteriaService->getAll();
+        $alternatif = Alternatif::all();
+        
+        $bobotRelatif = $this->hitungBobotRelatif($kriteria);
+        $pangkat = $this->hitungPangkat($kriteria, $bobotRelatif);
+        $matriks = $this->getMatriksAlternatifKriteria($alternatif, $kriteria);
+
+        return response()->json([
+            'kriteria' => $kriteria,
+            'alternatif' => $alternatif,
+            'bobot_relatif' => $bobotRelatif,
+            'pangkat' => $pangkat,
+            'matriks' => $matriks,
         ]);
-    }
-
-    public function matriks_nilai_utama()
-    {
-        $matriksPerbandingan = DB::table('matriks_perbandingan_utama as mpu')
-            ->join('kriteria as k', 'k.id', '=', 'mpu.kriteria_id')
-            ->select('mpu.*', 'k.id as kriteria_id', 'k.nama as nama_kriteria')
-            ->orderBy('mpu.kriteria_id', 'asc')
-            ->orderBy('mpu.kriteria_id_banding', 'asc')
-            ->get();
-
-        $kriteria = $this->kriteriaService->getAll();
-
-        // $dataNilai = [];
-        DB::table('matriks_nilai_utama')->truncate();
-        DB::table('matriks_nilai_prioritas_utama')->truncate();
-        foreach ($matriksPerbandingan as $item) {
-            $jumlahNilai = $matriksPerbandingan->where('kriteria_id_banding', $item->kriteria_id_banding)->sum('nilai');
-
-            DB::table('matriks_nilai_utama')->insert([
-                'nilai' => $item->nilai / $jumlahNilai,
-                'kriteria_id' => $item->kriteria_id,
-                'kriteria_id_banding' => $item->kriteria_id_banding,
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now(),
-            ]);
-        }
-
-        $matriksNilai = DB::table('matriks_nilai_utama as mnu')
-            ->join('kriteria as k', 'k.id', '=', 'mnu.kriteria_id')
-            ->select('mnu.*', 'k.id as kriteria_id', 'k.nama as nama_kriteria')
-            ->get();
-
-        foreach ($kriteria as $item) {
-            $nilai = $matriksNilai->where('kriteria_id', $item->id)->sum('nilai');
-            $jumlahKriteria = $kriteria->count();
-
-            DB::table('matriks_nilai_prioritas_utama')->insert([
-                'prioritas' => $nilai / $jumlahKriteria,
-                'kriteria_id' => $item->id,
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now(),
-            ]);
-        }
-    }
-
-    public function matriks_penjumlahan_utama()
-    {
-        $matriksPerbandingan = DB::table('matriks_perbandingan_utama as mpu')
-            ->join('kriteria as k', 'k.id', '=', 'mpu.kriteria_id')
-            ->select('mpu.*', 'k.id as kriteria_id', 'k.nama as nama_kriteria')
-            ->orderBy('mpu.kriteria_id', 'asc')
-            ->orderBy('mpu.kriteria_id_banding', 'asc')
-            ->get();
-
-        $matriksNilaiPrioritas = DB::table('matriks_nilai_prioritas_utama as mnpu')
-            ->join('kriteria as k', 'k.id', '=', 'mnpu.kriteria_id')
-            ->select('mnpu.*', 'k.id as kriteria_id', 'k.nama as nama_kriteria')
-            ->get();
-
-        $kriteria = $this->kriteriaService->getAll();
-
-        DB::table('matriks_penjumlahan_utama')->truncate();
-        DB::table('matriks_penjumlahan_prioritas_utama')->truncate();
-        foreach ($matriksPerbandingan as $item) {
-            $prioritas = $matriksNilaiPrioritas->where('kriteria_id', $item->kriteria_id_banding)->first()->prioritas;
-
-            DB::table('matriks_penjumlahan_utama')->insert([
-                'nilai' => $item->nilai * $prioritas,
-                'kriteria_id' => $item->kriteria_id,
-                'kriteria_id_banding' => $item->kriteria_id_banding,
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now(),
-            ]);
-        }
-
-        $matriksPenjumlahan = DB::table('matriks_penjumlahan_utama as mpu')
-            ->join('kriteria as k', 'k.id', '=', 'mpu.kriteria_id')
-            ->select('mpu.*', 'k.id as kriteria_id', 'k.nama as nama_kriteria')
-            ->orderBy('mpu.kriteria_id', 'asc')
-            ->orderBy('mpu.kriteria_id_banding', 'asc')
-            ->get();
-        // $dataNilai = [];
-        foreach ($kriteria as $item) {
-            $nilai = $matriksPenjumlahan->where('kriteria_id', $item->id)->sum('nilai');
-            $prioritas = $matriksNilaiPrioritas->where('kriteria_id', $item->id)->first()->prioritas;
-
-
-            DB::table('matriks_penjumlahan_prioritas_utama')->insert([
-                'prioritas' => $nilai / $prioritas,
-                'kriteria_id' => $item->id,
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now(),
-            ]);
-        }
     }
 }

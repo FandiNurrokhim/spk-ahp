@@ -19,10 +19,14 @@ class KriteriaController extends Controller
     {
         $judul = "Kriteria";
         $data = $this->kriteriaService->getAll();
+
+        // Generate kode otomatis C1, C2, C3, dst
         if ($data->last()) {
-            $kode = "K" . str_pad((int) substr($data->last()->kode, 1) + 1, 5, '0', STR_PAD_LEFT);
+            // Ambil angka dari kode terakhir (misal: C5 -> 5)
+            $lastNumber = (int) substr($data->last()->kode, 1);
+            $kode = "C" . ($lastNumber + 1);
         } else {
-            $kode = "K00001";
+            $kode = "C1";
         }
 
         return view('dashboard.kriteria.index', [
@@ -76,7 +80,7 @@ class KriteriaController extends Controller
             $message = str_replace(["&#039;", "'", '"'], '', $result['message']);
             return redirect('dashboard/kriteria')->with('gagal', $message);
         }
-        
+
         // Jika sukses
         return redirect('dashboard/kriteria')->with('berhasil', "Data berhasil di import!");
     }

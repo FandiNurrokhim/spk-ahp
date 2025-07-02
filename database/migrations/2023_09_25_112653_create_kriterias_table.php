@@ -17,6 +17,8 @@ return new class extends Migration
             $table->id();
             $table->string('kode', 7)->unique();
             $table->string('nama');
+            $table->enum('jenis', ['benefit', 'cost'])->default('benefit');
+            $table->decimal('bobot', 5, 2)->default(0.00);
             $table->timestamps();
         });
     }

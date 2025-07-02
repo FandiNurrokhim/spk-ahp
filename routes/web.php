@@ -75,7 +75,7 @@ Route::group([
             Route::get('/perhitungan_utama', [AHPController::class, 'index_perhitungan_utama'])->name('perhitungan_utama');
             Route::get('/matriks_perbandingan/{kriteria_id}', [AHPController::class, 'ubah_matriks_perbandingan_utama'])->name('matriks_perbandingan_utama.ubah');
             Route::post('/matriks_perbandingan', [AHPController::class, 'matriks_perbandingan_utama'])->name('matriks_perbandingan_utama.hitung');
-            Route::post('/matriks_utama', [AHPController::class, 'matriks_utama'])->name('matriks_utama.hitung');
+            Route::post('/wp-hitung', [AHPController::class, 'hitungUlang'])->name('wp.hitung');
         });
 
         Route::group([
