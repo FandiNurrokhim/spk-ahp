@@ -255,7 +255,7 @@
                                 <span class="label-text-alt" id="loading_edit1"></span>
                             </label>
                             <input type="text" name="kode" placeholder="Type here"
-                                class="input input-bordered w-full text-gray-800" required />
+                                class="input input-bordered w-full text-gray-800" required readonly disabled/>
                             <label class="label">
                                 @error('kode')
                                     <span class="label-text-alt text-error">{{ $message }}</span>
@@ -409,13 +409,12 @@
                     $.each(data, function(key, val) {
                         items.push(val);
                     });
-
                     $("#title_form").html(`${items[2]}`);
                     $("input[name='id']").val(items[0]);
                     $("input[name='kode']").val(items[1]);
                     $("input[name='nama']").val(items[2]);
-                    $("input[name='bobot']").val(items[3]);
-                    $("select[name='jenis']").val(items[4]);
+                    $("select[name='jenis']").val(items[3]);
+                    $("input[name='bobot']").val(items[4]);
 
                     $("#loading_edit1").html("");
                     $("#loading_edit2").html("");
