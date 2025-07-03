@@ -15,22 +15,23 @@ class DashboardController extends Controller
         $judul = 'Dashboard';
 
         $kriteria = Kriteria::get();
-        $kategori = Kategori::get()->count();
         $alternatif = Alternatif::get();
 
-        // Ganti dari hasil_solusi_ahp ke hasil_wp
+        // Ganti dari hasil_solusi_ahp ke hasil_wp dengan kolom yang benar
         $hasilSolusi = DB::table('hasil_wp as hw')
             ->join('alternatif as a', 'a.id', '=', 'hw.alternatif_id')
             ->select('hw.*', 'a.nama as nama_alternatif', 'a.kode')
             ->orderBy('hw.ranking', 'asc')
             ->get();
+
         $hasilNilaiData = '';
         foreach ($hasilSolusi as $item) {
-            $hasilNilaiData .= number_format($item->nilai_v, 6) . ", ";
+            // Ganti dari nilai_v ke vektor_v
+            $hasilNilaiData .= number_format($item->vektor_v, 6) . ", ";
         }
         $hasilNilaiData = rtrim($hasilNilaiData, ", ");
 
-        return view('dashboard.index', compact('judul', 'kriteria', 'kategori', 'alternatif', 'hasilSolusi', 'hasilNilaiData'));
+        return view('dashboard.index', compact('judul', 'kriteria', 'alternatif', 'hasilSolusi', 'hasilNilaiData'));
     }
 
     public function profile(Request $request)
@@ -51,12 +52,11 @@ class DashboardController extends Controller
     public function resetAlternatif()
     {
         // Hapus data relasi dulu
-        DB::table('penilaian')->delete();
-        DB::table('hasil_solusi_ahp')->delete();
-        // Baru hapus data alternatif
         DB::table('alternatif')->delete();
+        DB::table('hasil_wp')->delete();
+        DB::table('detail_wp')->delete();
 
-        return redirect()->route('reset')->with('success', 'Data alternatif berhasil direset.');
+        return redirect()->back()->with('success', 'Data alternatif berhasil direset.');
     }
 
 
@@ -67,16 +67,13 @@ class DashboardController extends Controller
 
         DB::table('alternatif')->truncate();
         DB::table('kriteria')->truncate();
-        DB::table('hasil_solusi_ahp')->truncate();
+        DB::table('hasil_wp')->truncate();
+        DB::table('detail_wp')->truncate();
         DB::table('penilaian')->truncate();
-        DB::table('matriks_perbandingan_utama')->truncate();
-        DB::table('matriks_nilai_utama')->truncate();
-        DB::table('matriks_penjumlahan_utama')->truncate();
-        DB::table('matriks_penjumlahan_prioritas_utama')->truncate();
 
         // Aktifkan kembali foreign key checks
         DB::statement('SET FOREIGN_KEY_CHECKS=1;');
 
-        return redirect()->route('reset')->with('success', 'Semua data berhasil direset.');
+        return redirect()->back()->with('success', 'Semua data berhasil direset.');
     }
 }

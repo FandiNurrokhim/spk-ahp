@@ -37,7 +37,7 @@
                 title: 'Berhasil',
                 text: '{{ session('berhasil') }}',
                 icon: 'success',
-                confirmButtonColor: '#6419E6',
+                confirmButtonColor: '#14B8A6',
                 confirmButtonText: 'OK',
             });
         @endif
@@ -47,7 +47,7 @@
                 title: 'Berhasil',
                 text: '{{ session('status') }}',
                 icon: 'success',
-                confirmButtonColor: '#6419E6',
+                confirmButtonColor: '#14B8A6',
                 confirmButtonText: 'OK',
             });
         @endif
@@ -57,7 +57,7 @@
                 title: 'Gagal',
                 text: '{{ session('gagal') }}',
                 icon: 'error',
-                confirmButtonColor: '#6419E6',
+                confirmButtonColor: '#14B8A6',
                 confirmButtonText: 'OK',
             });
         @endif
@@ -67,7 +67,7 @@
                 title: 'Gagal',
                 text: @foreach ($errors->all() as $error) '{{ $error }}' @endforeach,
                 icon: 'error',
-                confirmButtonColor: '#6419E6',
+                confirmButtonColor: '#14B8A6',
                 confirmButtonText: 'OK',
             })
         @endif

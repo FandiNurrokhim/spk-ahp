@@ -16,7 +16,7 @@
                             <form action="{{ route('wp.hitung') }}" method="post" enctype="multipart/form-data">
                                 @csrf
                                 <button type="submit"
-                                    class="btn btn-primary text-white dark:text-gray-800 normal-case bg-purple-600 hover:bg-opacity-70 hover:border-opacity-70 dark:bg-purple-300 dark:hover:bg-opacity-90">
+                                    class="btn btn-primary text-white dark:text-gray-800 normal-case bg-teal-500 hover:bg-opacity-70 hover:border-opacity-70 dark:bg-purple-300 dark:hover:bg-opacity-90">
                                     <i class="ri-calculator-fill"></i>
                                     Hitung Weighted Product
                                 </button>
@@ -263,7 +263,7 @@
                 title: 'Berhasil',
                 text: '{{ session('berhasil') }}',
                 icon: 'success',
-                confirmButtonColor: '#6419E6',
+                confirmButtonColor: '#14B8A6',
                 confirmButtonText: 'OK',
             })
         @endif
@@ -273,7 +273,7 @@
                 title: 'Gagal',
                 text: '{{ session('gagal') }}',
                 icon: 'error',
-                confirmButtonColor: '#6419E6',
+                confirmButtonColor: '#14B8A6',
                 confirmButtonText: 'OK',
             });
         @endif
@@ -285,7 +285,7 @@
                     '{{ $error }}'
                 @endforeach ,
                 icon: 'error',
-                confirmButtonColor: '#6419E6',
+                confirmButtonColor: '#14B8A6',
                 confirmButtonText: 'OK',
             })
         @endif

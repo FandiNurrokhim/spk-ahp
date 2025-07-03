@@ -1,6 +1,6 @@
-@extends("dashboard.layouts.app")
+@extends('dashboard.layouts.app')
 
-@section("container")
+@section('container')
     <div class="container mx-auto grid px-6">
         <h2 class="my-6 text-2xl font-semibold text-gray-700 dark:text-gray-200">
             Dashboard
@@ -37,55 +37,87 @@
                     </p>
                 </div>
             </div>
-        </div>
 
-        {{-- Card 2 --}}
-        <div class="mb-8 grid gap-6 md:grid-cols-2">
-            <div class="shadow-xs min-w-0 rounded-lg bg-white p-4 dark:bg-gray-800">
-                <h4 class="mb-4 font-semibold text-gray-600 dark:text-gray-300">
-                    Sistem Pendukung Keputusan
-                </h4>
-                <p class="mb-3 text-justify text-gray-600 dark:text-gray-400">
-                    AHP merupakan suatu model pendukung keputusan yang dikembangkan oleh Thomas L. Saaty. Model pendukung
-                    keputusan ini akan menguraikan masalah multi faktor atau multi kriteria yang kompleks menjadi suatu
-                    hirarki yang didefinisikan sebagai suatu representasi dari sebuah permasalahan yang kompleks dalam suatu
-                    struktur multi-level dimana level pertama adalah tujuan, yang diikuti level faktor, kriteria, sub
-                    kriteria, dan seterusnya ke bawah hingga level terakhir dari alternatif.
-                </p>
-                <a class="group text-sm font-semibold leading-normal text-gray-600 dark:text-gray-300" href="{{ route("kriteria") }}">
-                    Mulai
-                    <i class="ri-arrow-right-line ease-bounce group-hover:translate-x-1.25 ml-1 text-sm leading-normal transition-all duration-200"></i>
-                </a>
-            </div>
-            <div class="shadow-xs min-w-0 rounded-lg bg-purple-600 p-4 text-white">
-                <h4 class="mb-4 font-semibold">
-                    Kegunaan AHP (Analytical Hierarchy Process):
-                </h4>
-                <ul style="list-style-type: square;" class="mx-5 mb-3">
-                    <li>Struktur yang berhirarki, sebagai konsekuesi dari kriteria yang dipilih, sampai pada sub kriteria
-                        yang paling dalam.</li>
-                    <li>Memperhitungkan validitas sampai dengan batas toleransi inkonsistensi berbagai kriteria dan
-                        alternatif yang dipilih oleh pengambil keputusan.</li>
-                    <li>Memperhitungkan daya tahan output analisis sensitivitas pengambilan keputusan.</li>
-                </ul>
-                <a class="group text-sm font-semibold leading-normal" href="{{ route("kriteria") }}">
-                    Mulai
-                    <i class="ri-arrow-right-line ease-bounce group-hover:translate-x-1.25 ml-1 text-sm leading-normal transition-all duration-200"></i>
-                </a>
+            <div class="flex space-x-3 items-center">
+                <button id="btn-reset-alternatif"
+                    class="btn text-white dark:text-gray-800 normal-case bg-teal-500 hover:bg-opacity-70 hover:border-opacity-70 dark:bg-purple-300 dark:hover:bg-opacity-90">
+                    <i class="ri-refresh-line text-lg"></i>
+                    Reset Alternatif
+                </button>
+
+                <button id="btn-reset-semua"
+                    class="btn text-white dark:text-gray-800 normal-case bg-red-600 hover:bg-opacity-70 hover:border-opacity-70 dark:bg-red-300 dark:hover:bg-opacity-90">
+                    <i class="ri-refresh-line text-lg"></i>
+                    Reset Semua
+                </button>
             </div>
         </div>
+        {{-- Card 2 - Single Banner WP --}}
+        <div class="mb-8">
+            <div class="shadow-xs min-w-0 rounded-lg bg-gradient-to-r from-teal-600 to-green-600 p-8 text-white">
+                <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between">
+                    <div class="lg:w-2/3">
+                        <h4 class="mb-4 text-2xl font-bold">
+                            Sistem Pendukung Keputusan - Weighted Product (WP)
+                        </h4>
+                        <p class="mb-4 text-lg text-indigo-100">
+                            Metode WP adalah salah satu metode penyelesaian masalah Multi Attribute Decision Making (MADM)
+                            yang menggunakan perkalian untuk menghubungkan rating atribut, dimana rating setiap atribut
+                            harus dipangkatkan dulu dengan bobot atribut yang bersangkutan.
+                        </p>
 
+                        <div class="mb-6">
+                            <h5 class="mb-3 text-lg font-semibold text-indigo-100">Keunggulan Metode WP:</h5>
+                            <ul class="space-y-2 text-indigo-100">
+                                <li class="flex items-start">
+                                    <i class="ri-check-line mt-1 mr-2 text-green-300"></i>
+                                    <span>Perhitungan matematis sederhana dan mudah dipahami</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="ri-check-line mt-1 mr-2 text-green-300"></i>
+                                    <span>Proses perangkingan yang efektif dengan perkalian bobot</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="ri-check-line mt-1 mr-2 text-green-300"></i>
+                                    <span>Dapat menangani kriteria benefit dan cost secara bersamaan</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="ri-check-line mt-1 mr-2 text-green-300"></i>
+                                    <span>Hasil lebih akurat dengan normalisasi bobot yang tepat</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="lg:w-2/3 lg:text-left">
+                        <div class="mb-6">
+                            <h6 class="text-sm font-medium text-indigo-200 mb-2">Rumus WP:</h6>
+                            <div class="bg-white text-black bg-opacity-10 rounded-lg p-3 text-sm font-mono">
+                                S<sub>i</sub> = ∏<sup>n</sup><sub>j=1</sub> X<sub>ij</sub><sup>w<sub>j</sub></sup>
+                            </div>
+                        </div>
+
+                        <a class="inline-flex items-center px-6 py-3 bg-white text-teal-600 font-semibold rounded-lg shadow-lg hover:bg-indigo-50 transition-all duration-200 group"
+                            href="{{ route('kriteria') }}">
+                            <span>Mulai Perhitungan</span>
+                            <i
+                                class="ri-arrow-right-line ml-2 group-hover:translate-x-1 transition-transform duration-200"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
         {{-- Chart --}}
         <div class="mb-8 grid gap-6">
             <div class="shadow-xs min-w-0 rounded-lg bg-white p-4 dark:bg-gray-800">
                 <h4 class="mb-4 font-semibold text-gray-800 dark:text-gray-300">
-                    Hasil Perhitungan AHP Alternatif
+                    Hasil Perhitungan WP
                 </h4>
                 <canvas id="line"></canvas>
                 <div class="mt-4 flex justify-center space-x-3 text-sm text-gray-600 dark:text-gray-400">
                     <!-- Chart legend -->
                     <div class="flex items-center">
-                        <span class="mr-1 inline-block h-3 w-3 rounded-full bg-[#0694a2]"></span>
+                        <span class="mr-1 inline-block h-3 w-3 rounded-full bg-[#14B8A6]"></span>
                         <span>Alternatif</span>
                     </div>
                 </div>
@@ -94,7 +126,7 @@
     </div>
 @endsection
 
-@section("js")
+@section('js')
     <script>
         let hasilSolusiData = [];
         @foreach ($hasilSolusi as $item)
@@ -107,8 +139,8 @@
                 labels: hasilSolusiData,
                 datasets: [{
                     label: 'Nilai',
-                    backgroundColor: '#0694a2',
-                    borderColor: '#0694a2',
+                    backgroundColor: '#14B8A6',
+                    borderColor: '#14B8A6',
                     data: [{{ $hasilNilaiData }}],
                     fill: false,
                 }, ],
@@ -144,6 +176,40 @@
                 },
             },
         }
+
+        $('#btn-reset-alternatif').on('click', function() {
+            Swal.fire({
+                title: 'Reset Data Alternatif?',
+                text: "Semua data alternatif dan penilaian akan dihapus. Data tidak dapat dipulihkan!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#14B8A6',
+                cancelButtonColor: '#F87272',
+                confirmButtonText: 'Ya, reset!',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = "{{ route('reset.alternatif') }}";
+                }
+            });
+        });
+
+        $('#btn-reset-semua').on('click', function() {
+            Swal.fire({
+                title: 'Reset Semua Data?',
+                text: "Seluruh data (kriteria, alternatif, hasil) akan dihapus. Data tidak dapat dipulihkan!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#14B8A6',
+                cancelButtonColor: '#F87272',
+                confirmButtonText: 'Ya, reset semua!',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = "{{ route('reset.semua') }}";
+                }
+            });
+        });
 
         // change this to the id of your chart element in HMTL
         const lineCtx = document.getElementById('line')

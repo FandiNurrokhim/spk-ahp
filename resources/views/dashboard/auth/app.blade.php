@@ -22,7 +22,7 @@
 </head>
 <body class="font-workSans scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-400/60 scrollbar-thumb-rounded-full hover:scrollbar-thumb-gray-400/80 transition-all">
     <div class="flex items-center min-h-screen p-6 bg-gray-50 dark:bg-gray-900">
-        <div class="flex-1 h-full max-w-4xl mx-auto overflow-hidden bg-white rounded-lg shadow-xl dark:bg-gray-800">
+        <div class="flex-1 h-full max-w-xl mx-auto overflow-hidden bg-white rounded-lg shadow-xl dark:bg-gray-800">
             @yield('container')
         </div>
     </div>
@@ -35,7 +35,7 @@
                 title: 'Berhasil',
                 text: '{{ session('berhasil') }}',
                 icon: 'success',
-                confirmButtonColor: '#6419E6',
+                confirmButtonColor: '#14B8A6',
                 confirmButtonText: 'OK',
             });
         @endif
@@ -45,7 +45,7 @@
                 title: 'Gagal',
                 text: '{{ session('gagal') }}',
                 icon: 'error',
-                confirmButtonColor: '#6419E6',
+                confirmButtonColor: '#14B8A6',
                 confirmButtonText: 'OK',
             });
         @endif
@@ -55,7 +55,7 @@
                 title: 'Gagal',
                 text: @foreach ($errors->all() as $error) '{{ $error }}' @endforeach,
                 icon: 'error',
-                confirmButtonColor: '#6419E6',
+                confirmButtonColor: '#14B8A6',
                 confirmButtonText: 'OK',
             })
         @endif

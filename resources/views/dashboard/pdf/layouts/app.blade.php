@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="light" :class="{ 'theme-dark': dark }" x-data="data()" class="scroll-smooth">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,57 +13,152 @@
     <style>
         .judul-laporan {
             text-align: center;
+            margin-bottom: 30px;
         }
 
         .table-pdf table {
-            font-size: 14px;
-            font-weight: bolder;
-            table-layout: fixed;
-            width: 60%;
+            font-size: 24px;
+            font-weight: normal;
+            table-layout: auto;
+            width: 100% !important;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            border: 1px solid #e5e7eb;
         }
 
-        .table-pdf table th, .table-pdf table td {
+        .table-pdf table th,
+        .table-pdf table td {
+            border: 1px solid #e5e7eb;
+            padding: 8px 12px;
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        .rounded-full {
+            border-radius: 50% !important;
+        }
+
+        .table-pdf table th:first-child,
+        .table-pdf table td:first-child {
             text-align: left;
-            border: none;
-            padding: 5px 0 5px 0;
+            padding-left: 12px;
         }
 
         .table-pdf table tr {
             background-color: white;
         }
 
-        .table-pdf table td {
-            text-align: center;
-            font-weight: normal;
-        }
-        .table-pdf table td:first-child {
-            text-align: left;
-            padding-left: 10px;
-        }
-
-        .table-pdf table tr:nth-child(odd) {
-            background-color: #F3F3F3;
+        .table-pdf table tr:nth-child(even) {
+            background-color: #f9fafb;
         }
 
         .table-pdf table th {
-            font-size: 15px;
+            font-size: 24px;
             font-weight: bold;
-            color: white;
-            background-color: #7e3af2;
-            padding: 7px 10px;
+            color: white !important;
+            background-color: #0d9488 !important;
+            /* Teal-600 */
+            padding: 10px 12px;
             text-align: center;
         }
 
         .table-pdf table th:first-child {
-            border-top-left-radius: 5px;
+            border-top-left-radius: 6px;
         }
+
         .table-pdf table th:last-child {
-            border-top-right-radius: 5px;
+            border-top-right-radius: 6px;
+        }
+
+        /* Styling untuk tabel hasil ranking */
+        .table-pdf .bg-teal-500 {
+            background-color: #14b8a6 !important;
+            /* Teal-500 */
+            color: white !important;
+        }
+
+        .table-pdf .bg-teal-100 {
+            background-color: #ccfbf1 !important;
+            /* Teal-100 */
+        }
+
+        /* Styling untuk total/summary rows */
+        .table-pdf .bg-teal-100.font-bold {
+            background-color: #99f6e4 !important;
+            /* Teal-200 */
+            font-weight: bold;
+            border-top: 2px solid #0d9488;
+        }
+
+        /* Responsive text size untuk PDF */
+        @media print {
+            .table-pdf table {
+                font-size: 24px;
+            }
+
+            .table-pdf table th {
+                font-size: 11px;
+            }
+        }
+
+        /* Styling untuk highlight boxes */
+        .bg-teal-50 {
+            background-color: #f0fdfa !important;
+        }
+
+        .border-teal-400 {
+            border-color: #2dd4bf !important;
+        }
+
+        /* Ranking badges */
+        .bg-yellow-500 {
+            background-color: #eab308 !important;
+        }
+
+        .bg-gray-400 {
+            background-color: #9ca3af !important;
+        }
+
+        .bg-orange-600 {
+            background-color: #ea580c !important;
+        }
+
+        .bg-gray-200 {
+            background-color: #e5e7eb !important;
+        }
+
+        /* Section spacing */
+        .mb-6 {
+            margin-bottom: 24px;
+        }
+
+        .mb-7 {
+            margin-bottom: 28px;
+        }
+
+        /* Text styling */
+        .text-lg {
+            font-size: 18px;
+            line-height: 28px;
+        }
+
+        .text-xl {
+            font-size: 24px;
+            line-height: 28px;
+        }
+
+        .font-semibold {
+            font-weight: 600;
+        }
+
+        .font-bold {
+            font-weight: 700;
         }
     </style>
 </head>
-<body class="font-workSans scrollbar-thin scrollbar-thumb-purple-600 scrollbar-track-purple-600/60 scrollbar-thumb-rounded-full hover:scrollbar-thumb-purple-600/80 transition-all">
-    <div class="flex h-screen bg-gray-50 dark:bg-gray-900">
+
+<body class="font-workSans">
+    <div class="flex h-screen bg-gray-50">
         <div class="flex flex-col flex-1 w-full">
             <main class="h-full overflow-y-auto">
                 @yield('container')
@@ -70,4 +166,5 @@
         </div>
     </div>
 </body>
+
 </html>

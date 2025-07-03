@@ -12,7 +12,7 @@
             <div class="mx-auto max-w-screen-xl px-4 lg:px-12">
                 <div class="flex space-x-3 items-center">
                     <button id="btn-reset-alternatif"
-                        class="btn text-white dark:text-gray-800 normal-case bg-purple-600 hover:bg-opacity-70 hover:border-opacity-70 dark:bg-purple-300 dark:hover:bg-opacity-90">
+                        class="btn text-white dark:text-gray-800 normal-case bg-teal-500 hover:bg-opacity-70 hover:border-opacity-70 dark:bg-purple-300 dark:hover:bg-opacity-90">
                         <i class="ri-refresh-line text-lg"></i>
                         Reset Alternatif
                     </button>
@@ -43,7 +43,7 @@
                 title: 'Berhasil',
                 text: '{{ session('berhasil') }}',
                 icon: 'success',
-                confirmButtonColor: '#6419E6',
+                confirmButtonColor: '#14B8A6',
                 confirmButtonText: 'OK',
             });
         @endif
@@ -53,7 +53,7 @@
                 title: 'Gagal',
                 text: '{{ session('gagal') }}',
                 icon: 'error',
-                confirmButtonColor: '#6419E6',
+                confirmButtonColor: '#14B8A6',
                 confirmButtonText: 'OK',
             });
         @endif
@@ -65,7 +65,7 @@
                     '{{ $error }}'
                 @endforeach ,
                 icon: 'error',
-                confirmButtonColor: '#6419E6',
+                confirmButtonColor: '#14B8A6',
                 confirmButtonText: 'OK',
             })
         @endif
@@ -76,7 +76,7 @@
                 text: "Semua data alternatif dan penilaian akan dihapus. Data tidak dapat dipulihkan!",
                 icon: 'warning',
                 showCancelButton: true,
-                confirmButtonColor: '#6419E6',
+                confirmButtonColor: '#14B8A6',
                 cancelButtonColor: '#F87272',
                 confirmButtonText: 'Ya, reset!',
                 cancelButtonText: 'Batal'
@@ -93,7 +93,7 @@
                 text: "Seluruh data (kriteria, alternatif, penilaian, hasil) akan dihapus. Data tidak dapat dipulihkan!",
                 icon: 'warning',
                 showCancelButton: true,
-                confirmButtonColor: '#6419E6',
+                confirmButtonColor: '#14B8A6',
                 cancelButtonColor: '#F87272',
                 confirmButtonText: 'Ya, reset semua!',
                 cancelButtonText: 'Batal'

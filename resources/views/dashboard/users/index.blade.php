@@ -11,11 +11,11 @@
         <section class="mt-10">
             <div class="mx-auto max-w-screen-xl px-4 lg:px-12">
                 <div class="bg-white dark:bg-gray-800 relative shadow-md sm:rounded-lg overflow-hidden">
-                    <div class="flex justify-end items-center d p-4">
+                    <div class="flex justify-start items-center d p-4">
                         <div class="flex space-x-3">
                             <div class="flex space-x-3 items-center">
                                 <label for="add_button"
-                                    class="btn btn-primary btn-sm text-white dark:text-gray-800 normal-case bg-purple-600 hover:bg-opacity-70 hover:border-opacity-70 dark:bg-purple-300 dark:hover:bg-opacity-90">
+                                    class="btn  btn-sm text-white dark:text-gray-800 normal-case bg-teal-500 hover:bg-opacity-70 hover:border-opacity-70 dark:bg-purple-300 dark:hover:bg-opacity-90">
                                     <i class="ri-add-fill"></i>
                                     Tambah {{ $judul }}
                                 </label>
@@ -41,7 +41,7 @@
                                         <td class="px-4 py-3">{{ $item->email }}</td>
                                         <td class="px-4 py-3">
                                             @if ($item->role === 'admin')
-                                                <span class="badge bg-purple-600 text-white font-bold">Admin</span>
+                                                <span class="badge bg-teal-500 text-white font-bold">Admin</span>
                                             @elseif ($item->role === 'user')
                                                 <span class="badge bg-gray-400 text-white font-bold">User</span>
                                             @else
@@ -240,7 +240,7 @@
                 title: 'Berhasil',
                 text: '{{ session('berhasil') }}',
                 icon: 'success',
-                confirmButtonColor: '#6419E6',
+                confirmButtonColor: '#14B8A6',
                 confirmButtonText: 'OK',
             });
         @endif
@@ -250,7 +250,7 @@
                 title: 'Gagal',
                 text: '{{ session('gagal') }}',
                 icon: 'error',
-                confirmButtonColor: '#6419E6',
+                confirmButtonColor: '#14B8A6',
                 confirmButtonText: 'OK',
             });
         @endif
@@ -262,7 +262,7 @@
                     '{{ $error }}'
                 @endforeach ,
                 icon: 'error',
-                confirmButtonColor: '#6419E6',
+                confirmButtonColor: '#14B8A6',
                 confirmButtonText: 'OK',
             })
         @endif
@@ -377,7 +377,7 @@
                     "<b>Data: " + nama + "</b>",
                 icon: 'warning',
                 showCancelButton: true,
-                confirmButtonColor: '#6419E6',
+                confirmButtonColor: '#14B8A6',
                 cancelButtonColor: '#F87272',
                 confirmButtonText: 'Hapus Data!',
                 cancelButtonText: 'Batal',
@@ -394,7 +394,7 @@
                             Swal.fire({
                                 title: 'Data berhasil dihapus!',
                                 icon: 'success',
-                                confirmButtonColor: '#6419E6',
+                                confirmButtonColor: '#14B8A6',
                                 confirmButtonText: 'OK'
                             }).then((result) => {
                                 if (result.isConfirmed) {

@@ -11,14 +11,20 @@ use App\Models\Kriteria;
 class AlternatifController extends Controller
 {
     protected $alternatifService;
+    protected $kriteriaCount;
 
     public function __construct(AlternatifService $alternatifService)
     {
         $this->alternatifService = $alternatifService;
+        $this->kriteriaCount = Kriteria::count();
     }
 
     public function index()
     {
+        if ($this->kriteriaCount < 2) {
+            return redirect('dashboard/kriteria')->with('gagal', "Kriteria harus lebih dari sama dengan 2!");
+        }
+
         $judul = 'Alternatif';
         $data = $this->alternatifService->getAll();
         $kriteria = Kriteria::get();

@@ -10,65 +10,269 @@
     <div>
         <section class="mt-3">
             <div class="mx-auto max-w-screen-xl px-4 lg:px-12">
-
-                {{-- Chart --}}
-                <div class="mb-8 grid gap-6">
-                    <div class="shadow-xs min-w-0 rounded-lg bg-white p-4 dark:bg-gray-800">
-                        <h4 class="mb-4 font-semibold text-gray-800 dark:text-gray-300">
-                            Hasil Perhitungan AHP Alternatif
-                        </h4>
-                        <canvas id="line-hasil"></canvas>
-                        <div class="mt-4 flex justify-center space-x-3 text-sm text-gray-600 dark:text-gray-400">
-                            <!-- Chart legend -->
-                            <div class="flex items-center">
-                                <span class="mr-1 inline-block h-3 w-3 rounded-full bg-[#0694a2]"></span>
-                                <span>Alternatif</span>
+                <div class="flex justify-start items-center mb-5">
+                    <div class="flex space-x-3">
+                        <div class="flex justify-start items-center mb-5">
+                            <div class="flex space-x-3">
+                                <div class="flex space-x-3 items-center">
+                                    <form action="{{ route('wp.hitung') }}" method="post" enctype="multipart/form-data">
+                                        @csrf
+                                        <button type="submit"
+                                            class="inline-flex items-center px-4 py-2 rounded-lg text-white dark:text-gray-800 normal-case bg-teal-500 hover:bg-opacity-70 hover:border-opacity-70 dark:bg-teal-300 dark:hover:bg-opacity-90 font-medium text-sm transition duration-150 ease-in-out">
+                                            <i class="ri-calculator-fill mr-2 text-lg"></i>
+                                            Hitung Ulang Weighted Product
+                                        </button>
+                                    </form>
+                                </div>
+                                <div class="flex space-x-3 items-center">
+                                    <form action="{{ route('penilaian.pdf_hasil') }}" method="post"
+                                        enctype="multipart/form-data">
+                                        @csrf
+                                        <button type="submit"
+                                            class="inline-flex items-center px-4 py-2 bg-red-500 hover:bg-red-600 text-white font-medium rounded-lg text-sm transition duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2">
+                                            <i class="ri-file-pdf-2-fill mr-2 text-lg"></i>
+                                            Unduh Hasil PDF
+                                        </button>
+                                    </form>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
+                {{-- Tabel 1: Bobot Relatif Kriteria --}}
                 <div class="mb-7 bg-white dark:bg-gray-800 relative shadow-md sm:rounded-lg overflow-hidden">
-                    <div class="flex justify-between items-center d p-4 mb-5">
+                    <div class="flex justify-between items-center p-4 mb-5">
                         <div class="flex space-x-3">
                             <div class="flex space-x-3 items-center">
-                                <h2 class="text-xl font-bold text-gray-800 dark:text-gray-200">Hasil Perhitungan</h2>
-                                <form action="{{ route('penilaian.pdf_hasil') }}" method="post"
-                                    enctype="multipart/form-data" target="_blank">
-                                    @csrf
-                                    <button type="submit"
-                                        class="btn btn-sm text-white dark:text-gray-800 normal-case bg-rose-600 hover:bg-rose-600 hover:bg-opacity-70 hover:border-opacity-70 dark:bg-rose-300 dark:hover:bg-rose-300 dark:hover:bg-opacity-90 dark:border-rose-300">
-                                        <i class="ri-file-pdf-line"></i>
-                                        Export PDF
-                                    </button>
-                                </form>
+                                <h2 class="text-xl font-bold text-gray-800 dark:text-gray-200">1. Bobot Relatif Kriteria
+                                    (wj)</h2>
                             </div>
                         </div>
                     </div>
                     <div class="overflow-x-auto p-3">
-                        <table id="tabel_data_hasil"
-                            class="nowrap w-full text-sm text-left text-gray-500 dark:text-gray-400 stripe hover"
-                            style="width:100%; padding-top: 1em; padding-bottom: 1em;">
+                        <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
                             <thead class="text-xs text-gray-700 uppercase bg-gray-50">
                                 <tr>
-                                    <th scope="col" class="px-4 py-3">Alternatif</th>
-                                    <th scope="col" class="px-4 py-3">Nilai</th>
-                                    <th scope="col" class="px-4 py-3">Status</th>
+                                    @foreach ($kriteria as $item)
+                                        <th scope="col" class="px-4 py-3">{{ $item->kode ?? 'C' . $loop->iteration }}
+                                        </th>
+                                    @endforeach
+                                    <th scope="col" class="px-4 py-3">Σ wj</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach ($hasil as $item)
+                                <tr class="border-b dark:border-gray-700">
+                                    @foreach ($kriteria as $item)
+                                        <td class="px-4 py-3 text-lg font-semibold">
+                                            {{ isset($bobotRelatif[$item->id]) ? number_format($bobotRelatif[$item->id], 9) : '0' }}
+                                        </td>
+                                    @endforeach
+                                    <td class="px-4 py-3 text-lg font-bold bg-blue-50">1</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                {{-- Tabel 2: Matriks Perbandingan Alternatif dan Kriteria --}}
+                <div class="mb-7 bg-white dark:bg-gray-800 relative shadow-md sm:rounded-lg overflow-hidden">
+                    <div class="flex justify-between items-center p-4 mb-5">
+                        <div class="flex space-x-3">
+                            <div class="flex space-x-3 items-center">
+                                <h2 class="text-xl font-bold text-gray-800 dark:text-gray-200">2. Matriks Perbandingan
+                                    Alternatif dan Kriteria</h2>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="overflow-x-auto p-3">
+                        <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+                            <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+                                <tr>
+                                    <th scope="col" class="px-4 py-3">Alternatif / Kriteria</th>
+                                    @foreach ($kriteria as $item)
+                                        <th scope="col" class="px-4 py-3">{{ $item->kode ?? 'C' . $loop->iteration }}
+                                        </th>
+                                    @endforeach
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($alternatif as $alt)
                                     <tr class="border-b dark:border-gray-700">
-                                        <td class="px-4 py-3 text-gray-700 dark:text-gray-400 uppercase font-semibold">
-                                            {{ $item->nama_alternatif }}
+                                        <td class="px-4 py-3 font-semibold">{{ $alt->kode ?? 'A' . $loop->iteration }}</td>
+                                        @foreach ($kriteria as $krit)
+                                            @php
+                                                $penilaian = DB::table('penilaian')
+                                                    ->where('alternatif_id', $alt->id)
+                                                    ->where('kriteria_id', $krit->id)
+                                                    ->first();
+                                            @endphp
+                                            <td class="px-4 py-3">{{ $penilaian ? $penilaian->nilai : 0 }}</td>
+                                        @endforeach
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                {{-- Tabel 3: Pangkat (wj untuk cost = negatif) --}}
+                <div class="mb-7 bg-white dark:bg-gray-800 relative shadow-md sm:rounded-lg overflow-hidden">
+                    <div class="flex justify-between items-center p-4 mb-5">
+                        <div class="flex space-x-3">
+                            <div class="flex space-x-3 items-center">
+                                <h2 class="text-xl font-bold text-gray-800 dark:text-gray-200">3. Pangkat (wj untuk Cost =
+                                    negatif)</h2>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="overflow-x-auto p-3">
+                        <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+                            <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+                                <tr>
+                                    <th scope="col" class="px-4 py-3">Pangkat</th>
+                                    @foreach ($kriteria as $item)
+                                        <th scope="col" class="px-4 py-3">{{ $item->kode ?? 'C' . $loop->iteration }}
+                                        </th>
+                                    @endforeach
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="border-b dark:border-gray-700">
+                                    <td class="px-4 py-3 font-semibold">Nilai Pangkat</td>
+                                    @foreach ($kriteria as $item)
+                                        @php
+                                            $bobot = $bobotRelatif[$item->id] ?? 0;
+                                            if ($item->jenis == 'cost') {
+                                                $bobot = -$bobot;
+                                            }
+                                        @endphp
+                                        <td class="px-4 py-3 {{ $item->jenis == 'cost' ? 'text-red-600 font-bold' : '' }}">
+                                            {{ number_format($bobot, 9) }}
                                         </td>
-                                        <td class="px-4 py-3 text-gray-700 dark:text-gray-400 uppercase font-semibold">
-                                            {{ round($item->nilai, 3) }}
+                                    @endforeach
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                {{-- Tabel 4: Perhitungan Nilai Vektor S --}}
+                <div class="mb-7 bg-white dark:bg-gray-800 relative shadow-md sm:rounded-lg overflow-hidden">
+                    <div class="flex justify-between items-center p-4 mb-5">
+                        <div class="flex space-x-3">
+                            <div class="flex space-x-3 items-center">
+                                <h2 class="text-xl font-bold text-gray-800 dark:text-gray-200">4. Perhitungan Nilai Vektor S
+                                </h2>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="overflow-x-auto p-3">
+                        <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+                            <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+                                <tr>
+                                    <th scope="col" class="px-4 py-3">Alternatif</th>
+                                    <th scope="col" class="px-4 py-3">Nilai S</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($alternatif as $alt)
+                                    <tr class="border-b dark:border-gray-700">
+                                        <td class="px-4 py-3 font-semibold">{{ $alt->kode ?? 'A' . $loop->iteration }}</td>
+                                        <td class="px-4 py-3">
+                                            {{ isset($nilaiS[$alt->id]) ? number_format($nilaiS[$alt->id], 9) : '0' }}</td>
+                                    </tr>
+                                @endforeach
+                                <tr class="bg-blue-50 font-bold">
+                                    <td class="px-4 py-3">Jumlah</td>
+                                    <td class="px-4 py-3">{{ number_format(array_sum($nilaiS ?? []), 9) }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                {{-- Tabel 5: Perhitungan Nilai Preferensi Relatif (Vektor V) --}}
+                <div class="mb-7 bg-white dark:bg-gray-800 relative shadow-md sm:rounded-lg overflow-hidden">
+                    <div class="flex justify-between items-center p-4 mb-5">
+                        <div class="flex space-x-3">
+                            <div class="flex space-x-3 items-center">
+                                <h2 class="text-xl font-bold text-gray-800 dark:text-gray-200">5. Perhitungan Nilai
+                                    Preferensi Relatif (Vektor V)</h2>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="overflow-x-auto p-3">
+                        <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+                            <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+                                <tr>
+                                    <th scope="col" class="px-4 py-3">Alternatif</th>
+                                    <th scope="col" class="px-4 py-3">Nilai V</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($alternatif as $alt)
+                                    <tr class="border-b dark:border-gray-700">
+                                        <td class="px-4 py-3 font-semibold">{{ $alt->kode ?? 'A' . $loop->iteration }}</td>
+                                        <td class="px-4 py-3">
+                                            {{ isset($nilaiV[$alt->id]) ? number_format($nilaiV[$alt->id], 9) : '0' }}</td>
+                                    </tr>
+                                @endforeach
+                                <tr class="bg-blue-50 font-bold">
+                                    <td class="px-4 py-3">Jumlah</td>
+                                    <td class="px-4 py-3">1</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                {{-- Tabel 6: Ranking Alternatif --}}
+                <div class="mb-7 bg-white dark:bg-gray-800 relative shadow-md sm:rounded-lg overflow-hidden">
+                    <div class="flex justify-between items-center p-4 mb-5">
+                        <div class="flex space-x-3">
+                            <div class="flex space-x-3 items-center">
+                                <h2 class="text-xl font-bold text-gray-800 dark:text-gray-200">6. Ranking Alternatif</h2>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="overflow-x-auto p-3">
+                        <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+                            <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+                                <tr>
+                                    <th scope="col" class="px-4 py-3">Alternatif</th>
+                                    <th scope="col" class="px-4 py-3">Nama</th>
+                                    <th scope="col" class="px-4 py-3">Nilai V</th>
+                                    <th scope="col" class="px-4 py-3">Ranking</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @php
+                                    $sortedAlternatif = $alternatif->sortBy(function ($alt) use ($ranking) {
+                                        return $ranking[$alt->id] ?? 999;
+                                    });
+                                @endphp
+                                @foreach ($sortedAlternatif as $alt)
+                                    <tr
+                                        class="border-b dark:border-gray-700 {{ isset($ranking[$alt->id]) && $ranking[$alt->id] == 1 ? 'bg-green-50' : '' }}">
+                                        <td class="px-4 py-3 font-semibold">{{ $alt->kode ?? 'A' . $loop->iteration }}
                                         </td>
-                                        <td class="px-4 py-3 text-gray-700 dark:text-gray-400 uppercase font-semibold">
-                                            @if ($item->nilai > 85)
+                                        <td class="px-4 py-3">{{ $alt->nama }}</td>
+                                        <td class="px-4 py-3">
+                                            {{ isset($nilaiV[$alt->id]) ? number_format($nilaiV[$alt->id], 9) : '0' }}</td>
+                                        <td class="px-4 py-3">
+                                            @if (isset($ranking[$alt->id]))
                                                 <span
-                                                    class="badge bg-green-500 text-white font-bold">Direkomendasikan</span>
+                                                    class="px-2 py-1 text-sm font-semibold rounded-full 
+                                                    {{ $ranking[$alt->id] == 1
+                                                        ? 'bg-green-100 text-green-800'
+                                                        : ($ranking[$alt->id] == 2
+                                                            ? 'bg-blue-100 text-blue-800'
+                                                            : 'bg-gray-100 text-gray-800') }}">
+                                                    {{ $ranking[$alt->id] }}
+                                                </span>
+                                            @else
+                                                -
                                             @endif
                                         </td>
                                     </tr>
@@ -77,34 +281,20 @@
                         </table>
                     </div>
                 </div>
+
             </div>
         </section>
     </div>
 @endsection
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 @section('js')
     <script>
-        $(document).ready(function() {
-            $('#tabel_data_hasil').DataTable({
-                    scrollX: true,
-                    ordering: false,
-                })
-                .columns.adjust()
-                .responsive.recalc();
-        });
-
         @if (session()->has('berhasil'))
             Swal.fire({
                 title: 'Berhasil',
-                @if (session('berhasil')[1] == 0)
-                    html: "<p>{{ session('berhasil')[0] }}</p>",
-                @else
-                    html: "<p>{{ session('berhasil')[0] }}</p>" +
-                        "<div class='divider'></div>" +
-                        "<b>Alternatif: {{ session('berhasil')[1] }} </b>",
-                @endif
+                text: '{{ session('berhasil') }}',
                 icon: 'success',
-                confirmButtonColor: '#6419E6',
+                confirmButtonColor: '#14B8A6',
                 confirmButtonText: 'OK',
             })
         @endif
@@ -114,7 +304,7 @@
                 title: 'Gagal',
                 text: '{{ session('gagal') }}',
                 icon: 'error',
-                confirmButtonColor: '#6419E6',
+                confirmButtonColor: '#14B8A6',
                 confirmButtonText: 'OK',
             });
         @endif
@@ -126,64 +316,9 @@
                     '{{ $error }}'
                 @endforeach ,
                 icon: 'error',
-                confirmButtonColor: '#6419E6',
+                confirmButtonColor: '#14B8A6',
                 confirmButtonText: 'OK',
             })
         @endif
-    </script>
-
-    <script>
-        let hasilSolusiData = [];
-        @foreach ($hasilSolusi as $item)
-            hasilSolusiData.push(' {{ $item->nama_alternatif }} ');
-        @endforeach
-
-        const lineConfig = {
-            type: 'line',
-            data: {
-                labels: hasilSolusiData,
-                datasets: [{
-                    label: 'Nilai',
-                    backgroundColor: '#0694a2',
-                    borderColor: '#0694a2',
-                    data: [{{ $hasilNilaiData }}],
-                    fill: false,
-                }, ],
-            },
-            options: {
-                responsive: true,
-                legend: {
-                    display: false,
-                },
-                tooltips: {
-                    mode: 'index',
-                    intersect: false,
-                },
-                hover: {
-                    mode: 'nearest',
-                    intersect: true,
-                },
-                scales: {
-                    x: {
-                        display: true,
-                        scaleLabel: {
-                            display: true,
-                            labelString: 'Alternatif',
-                        },
-                    },
-                    y: {
-                        display: true,
-                        scaleLabel: {
-                            display: true,
-                            labelString: 'Value',
-                        },
-                    },
-                },
-            },
-        }
-
-        // change this to the id of your chart element in HMTL
-        const lineCtx = document.getElementById('line-hasil')
-        window.myLine = new Chart(lineCtx, lineConfig)
     </script>
 @endsection

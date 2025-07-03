@@ -35,7 +35,7 @@ class KriteriaRepository
         $result = $this->kriteria->create($data);
         
         // Untuk WP, hanya perlu menambah penilaian alternatif
-        // Tidak perlu matriks perbandingan seperti AHP
+        // Tidak perlu matriks perbandingan seperti WP
         $this->add_penilaian_alternatif();
 
         return $result;

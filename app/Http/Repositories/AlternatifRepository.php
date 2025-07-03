@@ -69,8 +69,8 @@ class AlternatifRepository
         try {
             $file = $data->file('import_data');
             $import = new AlternatifImport;
-            Excel::import($import, $file);
-    
+            $excel= Excel::import($import, $file);
+
             // Jika ada baris gagal, tangani di sini (jika pakai SkipsOnFailure)
             if (method_exists($import, 'failures') && $import->failures()->isNotEmpty()) {
                 $messages = $import->failures()->map(function($failure) {
@@ -82,8 +82,6 @@ class AlternatifRepository
                 ];
             }
     
-            $this->add_penilaian_alternatif();
-            
             // Hitung dan simpan hasil WP setelah import
             $this->hitungDanSimpanWP();
             

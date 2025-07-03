@@ -16,9 +16,9 @@
                             <form action="{{ route('penilaian.hitung') }}" method="post" enctype="multipart/form-data">
                                 @csrf
                                 <button type="submit"
-                                    class="btn btn-primary text-white dark:text-gray-800 normal-case bg-purple-600 hover:bg-opacity-70 hover:border-opacity-70 dark:bg-purple-300 dark:hover:bg-opacity-90">
+                                    class="btn btn-primary text-white dark:text-gray-800 normal-case bg-teal-500 hover:bg-opacity-70 hover:border-opacity-70 dark:bg-purple-300 dark:hover:bg-opacity-90">
                                     <i class="ri-add-fill"></i>
-                                    Hitung AHP Alternatif
+                                    Hitung WP Alternatif
                                 </button>
                             </form>
                             <form action="{{ route('penilaian.pdf_ahp') }}" method="post" enctype="multipart/form-data"
@@ -117,7 +117,7 @@
                 </div>
 
 
-                {{-- Tabel Hasil AHP --}}
+                {{-- Tabel Hasil WP --}}
                 <div class="mb-7 bg-white dark:bg-gray-800 relative shadow-md sm:rounded-lg overflow-hidden">
                     <div class="flex justify-between items-center d p-4 mb-5">
                         <div class="flex space-x-3">
@@ -196,7 +196,7 @@
                         "<b>Alternatif: {{ session('berhasil')[1] }} </b>",
                 @endif
                 icon: 'success',
-                confirmButtonColor: '#6419E6',
+                confirmButtonColor: '#14B8A6',
                 confirmButtonText: 'OK',
             })
         @endif
@@ -206,7 +206,7 @@
                 title: 'Gagal',
                 text: '{{ session('gagal') }}',
                 icon: 'error',
-                confirmButtonColor: '#6419E6',
+                confirmButtonColor: '#14B8A6',
                 confirmButtonText: 'OK',
             });
         @endif
@@ -218,7 +218,7 @@
                     '{{ $error }}'
                 @endforeach ,
                 icon: 'error',
-                confirmButtonColor: '#6419E6',
+                confirmButtonColor: '#14B8A6',
                 confirmButtonText: 'OK',
             })
         @endif

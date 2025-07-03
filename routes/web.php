@@ -2,10 +2,11 @@
 
 use App\Http\Middleware\AdminOnly;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\AHPController;
+use App\Http\Controllers\WPController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\KriteriaController;
+use App\Http\Controllers\TemplateController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PenilaianController;
 use App\Http\Controllers\AlternatifController;
@@ -56,10 +57,11 @@ Route::group([
     Route::group([
         'prefix' => 'hasil_akhir'
     ], function () {
-        Route::get('/', [PenilaianController::class, 'hasil_akhir'])->name('penilaian.hasil_akhir');
+        Route::get('/', [WPController::class, 'index'])->name('penilaian.hasil_akhir');
     });
-    Route::post('penilaian/pdf_hasil', [PenilaianController::class, 'pdf_hasil'])->name('penilaian.pdf_hasil');
-
+    Route::post('/penilaian/pdf_hasil', action: [WPController::class, 'pdf_hasil'])->name('penilaian.pdf_hasil');
+    Route::get('/download-template-alternatif', [TemplateController::class, 'downloadTemplateAlternatif'])->name('alternatif-template.download');
+    Route::get('/download-template-kriteria', [TemplateController::class, 'downloadTemplateKriteria'])->name('kriteria-template.download');
 
     Route::middleware([AdminOnly::class])->group(function () {
         Route::group([
@@ -72,10 +74,8 @@ Route::group([
             Route::post('/hapus', [KriteriaController::class, 'hapus'])->name('kriteria.hapus');
             Route::post('/import', [KriteriaController::class, 'import'])->name('kriteria.import');
 
-            Route::get('/perhitungan_utama', [AHPController::class, 'index_perhitungan_utama'])->name('perhitungan_utama');
-            Route::get('/matriks_perbandingan/{kriteria_id}', [AHPController::class, 'ubah_matriks_perbandingan_utama'])->name('matriks_perbandingan_utama.ubah');
-            Route::post('/matriks_perbandingan', [AHPController::class, 'matriks_perbandingan_utama'])->name('matriks_perbandingan_utama.hitung');
-            Route::post('/wp-hitung', [AHPController::class, 'hitungUlang'])->name('wp.hitung');
+            Route::get('/perhitungan_utama', [WPController::class, 'index_perhitungan_utama'])->name('perhitungan_utama');
+            Route::post('/wp-hitung', [WPController::class, 'hitungUlang'])->name('wp.hitung');
         });
 
         Route::group([
@@ -92,11 +92,8 @@ Route::group([
         Route::group([
             'prefix' => 'penilaian'
         ], function () {
-            Route::get('/', [PenilaianController::class, 'index'])->name('penilaian');
-            Route::get('/ubah/{alternatif_id}', [PenilaianController::class, 'ubah'])->name('penilaian.ubah');
-            Route::post('/ubah/{alternatif_id}', [PenilaianController::class, 'perbarui'])->name('penilaian.perbarui');
-            Route::post('/perhitungan_alternatif', [PenilaianController::class, 'perhitungan_alternatif'])->name('penilaian.hitung');
-            Route::post('/pdf_ahp', [PenilaianController::class, 'pdf_ahp'])->name('penilaian.pdf_ahp');
+            Route::get('/', [WPController::class, 'index'])->name('penilaian');
+            Route::post('/pdf_ahp', [WPController::class, 'pdf_ahp'])->name('penilaian.pdf_ahp');
         });
 
         Route::group([

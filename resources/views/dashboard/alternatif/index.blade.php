@@ -11,11 +11,11 @@
         <section class="mt-10">
             <div class="mx-auto max-w-screen-xl px-4 lg:px-12">
                 <div class="bg-white dark:bg-gray-800 relative shadow-md sm:rounded-lg overflow-hidden">
-                    <div class="flex justify-end items-center d p-4">
+                    <div class="flex justify-start items-center d p-4">
                         <div class="flex space-x-3">
                             <div class="flex space-x-3 items-center">
                                 <label for="add_button"
-                                    class="btn btn-primary btn-sm text-white dark:text-gray-800 normal-case bg-purple-600 hover:bg-opacity-70 hover:border-opacity-70 dark:bg-purple-300 dark:hover:bg-opacity-90">
+                                    class="btn  btn-sm text-white dark:text-gray-800 normal-case bg-teal-500 hover:bg-opacity-70 hover:border-opacity-70 dark:bg-purple-300 dark:hover:bg-opacity-90">
                                     <i class="ri-add-fill"></i>
                                     Tambah {{ $judul }}
                                 </label>
@@ -24,7 +24,7 @@
                                     <i class="ri-file-excel-line"></i>
                                     Import Data
                                 </label>
-                                <a href="{{ asset('template/Template Alternatif.xlsx') }}"
+                                <a href="/dashboard/download-template-alternatif"
                                     class="btn btn-sm text-white dark:text-gray-800 normal-case bg-blue-600 hover:bg-blue-600 hover:bg-opacity-70 hover:border-opacity-70 dark:bg-blue-300 dark:hover:bg-blue-300 dark:hover:bg-opacity-90 dark:border-blue-300">
                                     <i class="ri-file-download-line"></i>
                                     Unduh Template Excel
@@ -267,7 +267,7 @@
                 title: 'Berhasil',
                 text: '{{ session('berhasil') }}',
                 icon: 'success',
-                confirmButtonColor: '#6419E6',
+                confirmButtonColor: '#14B8A6',
                 confirmButtonText: 'OK',
             });
         @endif
@@ -277,7 +277,7 @@
                 title: 'Gagal',
                 text: '{{ session('gagal') }}',
                 icon: 'error',
-                confirmButtonColor: '#6419E6',
+                confirmButtonColor: '#14B8A6',
                 confirmButtonText: 'OK',
             });
         @endif
@@ -289,7 +289,7 @@
                     '{{ $error }}'
                 @endforeach ,
                 icon: 'error',
-                confirmButtonColor: '#6419E6',
+                confirmButtonColor: '#14B8A6',
                 confirmButtonText: 'OK',
             })
         @endif
@@ -334,7 +334,7 @@
                     "<b>Data: " + nama + "</b>",
                 icon: 'warning',
                 showCancelButton: true,
-                confirmButtonColor: '#6419E6',
+                confirmButtonColor: '#14B8A6',
                 cancelButtonColor: '#F87272',
                 confirmButtonText: 'Hapus Data!',
                 cancelButtonText: 'Batal',
@@ -351,7 +351,7 @@
                             Swal.fire({
                                 title: 'Data berhasil dihapus!',
                                 icon: 'success',
-                                confirmButtonColor: '#6419E6',
+                                confirmButtonColor: '#14B8A6',
                                 confirmButtonText: 'OK'
                             }).then((result) => {
                                 if (result.isConfirmed) {

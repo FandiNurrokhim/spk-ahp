@@ -15,7 +15,7 @@
 
 .theme-dark .dataTables_wrapper select,
 .theme-dark .dataTables_wrapper .dataTables_filter input {
-    color: #d8b4fe;
+    color: #5eead4;
     padding-left: 1rem;
     padding-right: 1rem;
     padding-top: 0.5rem;
@@ -46,7 +46,7 @@ table.dataTable.display tbody tr:hover {
     box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
     font-weight: 700;
     border-radius: 0.25rem;
-    background: #9333ea !important;
+    background: #0d9488 !important;
     border: 1px solid transparent;
 }
 
@@ -55,7 +55,7 @@ table.dataTable.display tbody tr:hover {
     box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
     font-weight: 700;
     border-radius: 0.25rem;
-    background: #d8b4fe !important;
+    background: #5eead4 !important;
     border: 1px solid transparent;
 }
 
@@ -65,8 +65,8 @@ table.dataTable.display tbody tr:hover {
     box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
     font-weight: 700;
     border-radius: 0.25rem;
-    background: #d8b4fe !important;
-    border: 1px solid #d8b4fe !important;
+    background: #5eead4 !important;
+    border: 1px solid #5eead4 !important;
 }
 
 #tabel_data_previous:hover {
@@ -106,7 +106,7 @@ table.dataTable.no-footer {
 /*Change colour of responsive icon*/
 table.dataTable.dtr-inline.collapsed > tbody > tr > td:first-child:before,
 table.dataTable.dtr-inline.collapsed > tbody > tr > th:first-child:before {
-    background-color: #d8b4fe !important;
+    background-color: #5eead4 !important;
 }
 
 /* Pagination info */
@@ -114,7 +114,7 @@ table.dataTable.dtr-inline.collapsed > tbody > tr > th:first-child:before {
     color: #1a1a1a !important;
 }
 .theme-dark .dataTables_info {
-    color: #d8b4fe !important;
+    color: #5eead4 !important;
 }
 
 /* Show data info */
@@ -122,7 +122,7 @@ table.dataTable.dtr-inline.collapsed > tbody > tr > th:first-child:before {
     color: #1a1a1a !important;
 }
 .theme-dark .dataTables_length {
-    color: #d8b4fe !important;
+    color: #5eead4 !important;
 }
 
 /* Search label */
@@ -130,6 +130,5 @@ table.dataTable.dtr-inline.collapsed > tbody > tr > th:first-child:before {
     color: #1a1a1a !important;
 }
 .theme-dark .dataTables_filter {
-    color: #d8b4fe !important;
+    color: #5eead4 !important;
 }
-
