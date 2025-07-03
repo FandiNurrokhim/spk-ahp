@@ -105,9 +105,7 @@ class KriteriaRepository
 
     public function perbarui($id, $data)
     {
-        dd($data);
         $result = $this->kriteria->where('id', $id)->update([
-            "kode" => $data['kode'],
             "nama" => $data['nama'],
             "bobot" => $data['bobot'],
             "jenis" => $data['jenis'], 

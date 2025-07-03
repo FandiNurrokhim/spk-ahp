@@ -179,19 +179,6 @@
                         @csrf
                         <div class="form-control w-full max-w-xs">
                             <label class="label">
-                                <span class="label-text">Kode</span>
-                            </label>
-                            <input type="text" name="kode" placeholder="Type here"
-                                class="input input-bordered w-full max-w-xs text-gray-800 bg-slate-100"
-                                value="{{ $kode }}" readonly required />
-                            <label class="label">
-                                @error('kode')
-                                    <span class="label-text-alt text-error">{{ $message }}</span>
-                                @enderror
-                            </label>
-                        </div>
-                        <div class="form-control w-full max-w-xs">
-                            <label class="label">
                                 <span class="label-text">Nama</span>
                             </label>
                             <input type="text" name="nama" placeholder="Type here"
@@ -249,19 +236,6 @@
                                 id="title_form"><span class="loading loading-dots loading-md"></span></span></h3>
                         @csrf
                         <input type="text" name="id" hidden />
-                        <div class="form-control w-full max-w-xs">
-                            <label class="label">
-                                <span class="label-text">Kode</span>
-                                <span class="label-text-alt" id="loading_edit1"></span>
-                            </label>
-                            <input type="text" name="kode" placeholder="Type here"
-                                class="input input-bordered w-full text-gray-800" required readonly disabled/>
-                            <label class="label">
-                                @error('kode')
-                                    <span class="label-text-alt text-error">{{ $message }}</span>
-                                @enderror
-                            </label>
-                        </div>
                         <div class="form-control w-full max-w-xs">
                             <label class="label">
                                 <span class="label-text">Nama</span>
@@ -411,7 +385,6 @@
                     });
                     $("#title_form").html(`${items[2]}`);
                     $("input[name='id']").val(items[0]);
-                    $("input[name='kode']").val(items[1]);
                     $("input[name='nama']").val(items[2]);
                     $("select[name='jenis']").val(items[3]);
                     $("input[name='bobot']").val(items[4]);

@@ -242,7 +242,8 @@ class WPController extends Controller
     // Method untuk refresh/hitung ulang
     public function hitungUlang()
     {
-        return $this->simpanHasilWP();
+        $this->simpanHasilWP();
+        return redirect()->back()->with('berhasil', 'Perhitungan Ulang Berhasil');
     }
 
     // Method untuk export hasil (opsional)

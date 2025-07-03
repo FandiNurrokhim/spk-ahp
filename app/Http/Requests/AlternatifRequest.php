@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\Request;
 
 class AlternatifRequest extends FormRequest
 {
@@ -25,7 +26,6 @@ class AlternatifRequest extends FormRequest
     {
         $id = $this->id ?? null;
         $rules = [
-            'kode' => 'required|string|max:10',
             'nama' => 'required|string|max:255',
         ];
 
@@ -46,7 +46,6 @@ class AlternatifRequest extends FormRequest
     public function messages()
     {
         $messages = [
-            'kode.required' => 'Kode alternatif harus diisi',
             'nama.required' => 'Nama alternatif harus diisi',
         ];
 

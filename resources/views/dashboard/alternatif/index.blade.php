@@ -40,7 +40,7 @@
                                 <tr>
                                     <th scope="col" class="px-4 py-3">Kode</th>
                                     <th scope="col" class="px-4 py-3">Nama</th>
-                                    @foreach($kriteria as $k)
+                                    @foreach ($kriteria as $k)
                                         <th scope="col" class="px-4 py-3">{{ $k->kode }}</th>
                                     @endforeach
                                     <th scope="col" class="px-4 py-3">Aksi</th>
@@ -51,7 +51,7 @@
                                     <tr class="border-b dark:border-gray-700">
                                         <td class="px-4 py-3 font-semibold">{{ $item->kode }}</td>
                                         <td class="px-4 py-3">{{ $item->nama }}</td>
-                                        @foreach($kriteria as $k)
+                                        @foreach ($kriteria as $k)
                                             @php
                                                 $penilaian = DB::table('penilaian')
                                                     ->where('alternatif_id', $item->id)
@@ -85,58 +85,36 @@
                     <form action="{{ route('alternatif.simpan') }}" method="post" enctype="multipart/form-data">
                         <h3 class="font-bold text-lg mb-4">Tambah {{ $judul }}</h3>
                         @csrf
-                        
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div class="form-control w-full">
-                                <label class="label">
-                                    <span class="label-text">Kode</span>
-                                </label>
-                                <input type="text" name="kode" placeholder="Type here"
-                                    class="input input-bordered w-full text-gray-800 bg-slate-100"
-                                    value="{{ $kode }}" readonly required />
-                                <label class="label">
-                                    @error('kode')
-                                        <span class="label-text-alt text-error">{{ $message }}</span>
-                                    @enderror
-                                </label>
-                            </div>
-                            
-                            <div class="form-control w-full">
-                                <label class="label">
-                                    <span class="label-text">Nama</span>
-                                </label>
-                                <input type="text" name="nama" placeholder="Masukkan nama alternatif"
-                                    class="input input-bordered w-full text-gray-800" value="{{ old('nama') }}"
-                                    required />
-                                <label class="label">
-                                    @error('nama')
-                                        <span class="label-text-alt text-error">{{ $message }}</span>
-                                    @enderror
-                                </label>
-                            </div>
+
+                        <div class="form-control w-full">
+                            <label class="label">
+                                <span class="label-text">Nama</span>
+                            </label>
+                            <input type="text" name="nama" placeholder="Masukkan nama alternatif"
+                                class="input input-bordered w-full text-gray-800" value="{{ old('nama') }}" required />
+                            <label class="label">
+                                @error('nama')
+                                    <span class="label-text-alt text-error">{{ $message }}</span>
+                                @enderror
+                            </label>
                         </div>
 
                         <div class="divider">Nilai Kriteria</div>
 
-                        <div class="grid grid-cols-1 gap-4">
-                            @foreach($kriteria as $k)
+                        <div class="grid grid-cols-1 gap-2">
+                            @foreach ($kriteria as $k)
                                 <div class="form-control w-full">
                                     <label class="label">
                                         <span class="label-text">{{ $k->kode }} - {{ $k->nama }}</span>
-                                        <span class="label-text-alt badge {{ $k->jenis == 'benefit' ? 'badge-success' : 'badge-error' }}">
+                                        <span
+                                            class="label-text-alt badge {{ $k->jenis == 'benefit' ? 'badge-success' : 'badge-error' }}">
                                             {{ ucfirst($k->jenis) }}
                                         </span>
                                     </label>
-                                    <input type="number" name="kriteria[{{ $k->id }}]" 
-                                        placeholder="Masukkan nilai"
-                                        class="input input-bordered w-full text-gray-800" 
-                                        value="{{ old('kriteria.'.$k->id, 0) }}"
-                                        min="0" step="0.01" required />
-                                    <label class="label">
-                                        @error('kriteria.'.$k->id)
-                                            <span class="label-text-alt text-error">{{ $message }}</span>
-                                        @enderror
-                                    </label>
+                                    <input type="number" name="kriteria[{{ $k->id }}]" placeholder="Masukkan nilai"
+                                        class="input input-bordered w-full text-gray-800"
+                                        value="{{ old('kriteria.' . $k->id, 0) }}" min="0" step="0.01"
+                                        required />
                                 </div>
                             @endforeach
                         </div>
@@ -159,51 +137,34 @@
                                 id="title_form"><span class="loading loading-dots loading-md"></span></span></h3>
                         @csrf
                         <input type="text" name="id" hidden />
-                        
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div class="form-control w-full">
-                                <label class="label">
-                                    <span class="label-text">Kode</span>
-                                    <span class="label-text-alt" id="loading_edit1"></span>
-                                </label>
-                                <input type="text" name="kode" placeholder="Type here"
-                                    class="input input-bordered w-full text-gray-800" required />
-                                <label class="label">
-                                    @error('kode')
-                                        <span class="label-text-alt text-error">{{ $message }}</span>
-                                    @enderror
-                                </label>
-                            </div>
-                            
-                            <div class="form-control w-full">
-                                <label class="label">
-                                    <span class="label-text">Nama</span>
-                                    <span class="label-text-alt" id="loading_edit2"></span>
-                                </label>
-                                <input type="text" name="nama" placeholder="Masukkan nama alternatif"
-                                    class="input input-bordered w-full text-gray-800" required />
-                                <label class="label">
-                                    @error('nama')
-                                        <span class="label-text-alt text-error">{{ $message }}</span>
-                                    @enderror
-                                </label>
-                            </div>
+                        <div class="form-control w-full">
+                            <label class="label">
+                                <span class="label-text">Nama</span>
+                                <span class="label-text-alt" id="loading_edit2"></span>
+                            </label>
+                            <input type="text" name="nama" placeholder="Masukkan nama alternatif"
+                                class="input input-bordered w-full text-gray-800" required />
+                            <label class="label">
+                                @error('nama')
+                                    <span class="label-text-alt text-error">{{ $message }}</span>
+                                @enderror
+                            </label>
                         </div>
 
                         <div class="divider">Nilai Kriteria</div>
 
-                        <div class="grid grid-cols-1 gap-4" id="kriteria_edit">
-                            @foreach($kriteria as $k)
+                        <div class="grid grid-cols-1 gap-2" id="kriteria_edit">
+                            @foreach ($kriteria as $k)
                                 <div class="form-control w-full">
                                     <label class="label">
                                         <span class="label-text">{{ $k->kode }} - {{ $k->nama }}</span>
-                                        <span class="label-text-alt badge {{ $k->jenis == 'benefit' ? 'badge-success' : 'badge-error' }}">
+                                        <span
+                                            class="label-text-alt badge {{ $k->jenis == 'benefit' ? 'badge-success' : 'badge-error' }}">
                                             {{ ucfirst($k->jenis) }}
                                         </span>
                                     </label>
-                                    <input type="number" name="kriteria[{{ $k->id }}]" 
-                                        placeholder="Masukkan nilai"
-                                        class="input input-bordered w-full text-gray-800" 
+                                    <input type="number" name="kriteria[{{ $k->id }}]"
+                                        placeholder="Masukkan nilai" class="input input-bordered w-full text-gray-800"
                                         min="0" step="0.01" required />
                                 </div>
                             @endforeach
@@ -314,9 +275,10 @@
                     $("input[name='nama']").val(data.nama);
 
                     // Set nilai untuk setiap kriteria
-                    if(data.penilaian) {
+                    if (data.penilaian) {
                         Object.keys(data.penilaian).forEach(function(kriteria_id) {
-                            $(`input[name='kriteria[${kriteria_id}]']`).val(data.penilaian[kriteria_id]);
+                            $(`input[name='kriteria[${kriteria_id}]']`).val(data.penilaian[
+                                kriteria_id]);
                         });
                     }
 

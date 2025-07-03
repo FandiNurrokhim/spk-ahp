@@ -37,7 +37,6 @@ class AlternatifRepository
     {
         // Simpan data alternatif
         $alternatif = $this->alternatif->create([
-            'kode' => $data['kode'],
             'nama' => $data['nama']
         ]);
 
@@ -69,7 +68,7 @@ class AlternatifRepository
         try {
             $file = $data->file('import_data');
             $import = new AlternatifImport;
-            $excel= Excel::import($import, $file);
+            Excel::import($import, $file);
 
             // Jika ada baris gagal, tangani di sini (jika pakai SkipsOnFailure)
             if (method_exists($import, 'failures') && $import->failures()->isNotEmpty()) {
@@ -137,7 +136,6 @@ class AlternatifRepository
     {
         // Update data alternatif
         $this->alternatif->where('id', $id)->update([
-            'kode' => $data['kode'],
             'nama' => $data['nama']
         ]);
 
