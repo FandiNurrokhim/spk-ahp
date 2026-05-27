@@ -63,10 +63,10 @@
                                                 onclick="return edit_button('{{ $item->id }}')">
                                                 <i class="ri-pencil-line"></i>
                                             </label>
-                                            <button class="btn btn-sm btn-error text-white"
+                                            <x-danger-button type="button" class="btn btn-sm"
                                                 onclick="return delete_button('{{ $item->id }}', '{{ $item->nama }}');">
                                                 <i class="ri-delete-bin-line"></i>
-                                            </button>
+                                            </x-danger-button>
                                         </td>
                                     </tr>
                                 @endforeach
@@ -181,7 +181,7 @@
                             <label class="label">
                                 <span class="label-text">Nama</span>
                             </label>
-                            <input type="text" name="nama" placeholder="Type here"
+                            <input type="text" name="nama" placeholder="Masukan Nama"
                                 class="input input-bordered w-full max-w-xs text-gray-800" value="{{ old('nama') }}"
                                 required />
                             <label class="label">

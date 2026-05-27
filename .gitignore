@@ -20,3 +20,11 @@ yarn-error.log
 /.nova
 /.vscode
 /.zed
+
+# Node deps and build artifacts
+node_modules/
+package-lock.json
+.vite/
+
+# Laravel Mix / Vite build manifests (if used)
+/public/mix-manifest.json

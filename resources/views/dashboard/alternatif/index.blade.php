@@ -65,10 +65,10 @@
                                                 onclick="return edit_button('{{ $item->id }}')">
                                                 <i class="ri-pencil-line"></i>
                                             </label>
-                                            <button class="btn btn-sm btn-error text-white"
+                                            <x-danger-button type="button" class="btn btn-sm"
                                                 onclick="return delete_button('{{ $item->id }}', '{{ $item->nama }}');">
                                                 <i class="ri-delete-bin-line"></i>
-                                            </button>
+                                            </x-danger-button>
                                         </td>
                                     </tr>
                                 @endforeach
