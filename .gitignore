@@ -24,7 +24,9 @@ yarn-error.log
 # Node deps and build artifacts
 node_modules/
 package-lock.json
+yarn.lock
 .vite/
+.cache/
 
-# Laravel Mix / Vite build manifests (if used)
+# Vite build manifest
 /public/mix-manifest.json
