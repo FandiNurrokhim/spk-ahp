@@ -37,7 +37,8 @@ class AlternatifRepository
     {
         // Simpan data alternatif
         $alternatif = $this->alternatif->create([
-            'nama' => $data['nama']
+            'nama' => $data['nama'],
+            'nik'  => $data['nik'],
         ]);
 
         // Simpan nilai untuk setiap kriteria
@@ -125,10 +126,11 @@ class AlternatifRepository
             ->toArray();
 
         return [
-            'id' => $data->id,
-            'kode' => $data->kode,
-            'nama' => $data->nama,
-            'penilaian' => $penilaian
+            'id'        => $data->id,
+            'kode'      => $data->kode,
+            'nama'      => $data->nama,
+            'nik'       => $data->nik,
+            'penilaian' => $penilaian,
         ];
     }
 
@@ -136,7 +138,8 @@ class AlternatifRepository
     {
         // Update data alternatif
         $this->alternatif->where('id', $id)->update([
-            'nama' => $data['nama']
+            'nama' => $data['nama'],
+            'nik'  => $data['nik'],
         ]);
 
         // Update nilai untuk setiap kriteria

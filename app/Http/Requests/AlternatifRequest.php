@@ -27,6 +27,7 @@ class AlternatifRequest extends FormRequest
         $id = $this->id ?? null;
         $rules = [
             'nama' => 'required|string|max:255',
+            'nik'  => 'required|string|size:16|unique:alternatif,nik,' . ($id ?? 'NULL') . ',id',
         ];
 
         // Validasi untuk setiap kriteria

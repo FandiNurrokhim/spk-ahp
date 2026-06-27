@@ -14,7 +14,7 @@ class AlternatifImport implements ToCollection, WithHeadingRow
 {
     protected $kriteria;
     protected $errors = [];
-    protected $requiredHeaders = ['kode', 'nama'];
+    protected $requiredHeaders = ['kode', 'nama', 'nik'];
 
     public function __construct()
     {
@@ -43,7 +43,7 @@ class AlternatifImport implements ToCollection, WithHeadingRow
             \Log::info("Processing row {$rowNumber}: ", $row->toArray());
 
             // Skip baris kosong atau keterangan
-            if (empty($row['kode']) || empty($row['nama'])) {
+            if (empty($row['kode']) || empty($row['nama']) || empty($row['nik'])) {
                 \Log::info("Skipping row {$rowNumber}: empty kode or nama");
                 continue;
             }
@@ -72,7 +72,8 @@ class AlternatifImport implements ToCollection, WithHeadingRow
                     // Update data yang sudah ada
                     $alternatif = $existingAlternatif;
                     $alternatif->update([
-                        'nama' => $row['nama'],
+                        'nama'       => $row['nama'],
+                        'nik'        => (string) $row['nik'],
                         'updated_at' => Carbon::now(),
                     ]);
                     
@@ -80,8 +81,9 @@ class AlternatifImport implements ToCollection, WithHeadingRow
                 } else {
                     // Simpan data baru
                     $alternatif = Alternatif::create([
-                        'kode' => 'TEMP_' . uniqid(),
-                        'nama' => $row['nama'],
+                        'kode'       => 'TEMP_' . uniqid(),
+                        'nama'       => $row['nama'],
+                        'nik'        => (string) $row['nik'],
                         'created_at' => Carbon::now(),
                         'updated_at' => Carbon::now(),
                     ]);
@@ -220,6 +222,18 @@ class AlternatifImport implements ToCollection, WithHeadingRow
             $valid = false;
         } elseif (strlen($row['nama']) > 255) {
             $this->errors[] = "Baris {$rowNumber}: Nama alternatif maksimal 255 karakter";
+            $valid = false;
+        }
+
+        // Validasi NIK
+        if (empty($row['nik'])) {
+            $this->errors[] = "Baris {$rowNumber}: NIK wajib diisi";
+            $valid = false;
+        } elseif (strlen((string) $row['nik']) !== 16) {
+            $this->errors[] = "Baris {$rowNumber}: NIK harus 16 digit";
+            $valid = false;
+        } elseif (!ctype_digit((string) $row['nik'])) {
+            $this->errors[] = "Baris {$rowNumber}: NIK hanya boleh berisi angka";
             $valid = false;
         }
 

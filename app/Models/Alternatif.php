@@ -15,6 +15,7 @@ class Alternatif extends Model
     public $timestamps = "true";
     protected $fillable = [
         "nama",
+        'nik',
         'kode',
     ];
 

@@ -18,6 +18,7 @@ class AlternatifFactory extends Factory
     {
         return [
             'nama' => fake('id_ID')->word(),
+            'nik'  => fake()->unique()->numerify('################'),
         ];
     }
 }
