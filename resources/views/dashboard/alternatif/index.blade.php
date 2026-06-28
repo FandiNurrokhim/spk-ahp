@@ -39,6 +39,7 @@
                             <thead class="text-xs text-gray-700 uppercase bg-gray-50">
                                 <tr>
                                     <th scope="col" class="px-4 py-3">Kode</th>
+                                    <th scope="col" class="px-4 py-3">NIK</th>
                                     <th scope="col" class="px-4 py-3">Nama</th>
                                     @foreach ($kriteria as $k)
                                         <th scope="col" class="px-4 py-3">{{ $k->kode }}</th>
@@ -50,6 +51,7 @@
                                 @foreach ($data as $item)
                                     <tr class="border-b dark:border-gray-700">
                                         <td class="px-4 py-3 font-semibold">{{ $item->kode }}</td>
+                                        <td class="px-4 py-3 font-mono text-xs">{{ $item->nik }}</td>
                                         <td class="px-4 py-3">{{ $item->nama }}</td>
                                         @foreach ($kriteria as $k)
                                             @php
@@ -94,6 +96,21 @@
                                 class="input input-bordered w-full text-gray-800" value="{{ old('nama') }}" required />
                             <label class="label">
                                 @error('nama')
+                                    <span class="label-text-alt text-error">{{ $message }}</span>
+                                @enderror
+                            </label>
+                        </div>
+
+                        <div class="form-control w-full">
+                            <label class="label">
+                                <span class="label-text">NIK</span>
+                            </label>
+                            <input type="text" name="nik" placeholder="Masukkan 16 digit NIK"
+                                class="input input-bordered w-full text-gray-800 font-mono"
+                                value="{{ old('nik') }}" maxlength="16" pattern="\d{16}"
+                                inputmode="numeric" required />
+                            <label class="label">
+                                @error('nik')
                                     <span class="label-text-alt text-error">{{ $message }}</span>
                                 @enderror
                             </label>
@@ -146,6 +163,20 @@
                                 class="input input-bordered w-full text-gray-800" required />
                             <label class="label">
                                 @error('nama')
+                                    <span class="label-text-alt text-error">{{ $message }}</span>
+                                @enderror
+                            </label>
+                        </div>
+
+                        <div class="form-control w-full">
+                            <label class="label">
+                                <span class="label-text">NIK</span>
+                            </label>
+                            <input type="text" name="nik" placeholder="Masukkan 16 digit NIK"
+                                class="input input-bordered w-full text-gray-800 font-mono"
+                                maxlength="16" pattern="\d{16}" inputmode="numeric" required />
+                            <label class="label">
+                                @error('nik')
                                     <span class="label-text-alt text-error">{{ $message }}</span>
                                 @enderror
                             </label>
@@ -273,6 +304,7 @@
                     $("input[name='id']").val(data.id);
                     $("input[name='kode']").val(data.kode);
                     $("input[name='nama']").val(data.nama);
+                    $("input[name='nik']").val(data.nik);
 
                     // Set nilai untuk setiap kriteria
                     if (data.penilaian) {
