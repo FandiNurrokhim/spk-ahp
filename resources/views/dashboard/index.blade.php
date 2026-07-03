@@ -72,6 +72,133 @@
     {{-- Divider --}}
     <div class="bg-gray-50 h-2"></div>
 
+    {{-- Kriteria Penilaian Section --}}
+    <div class="bg-white py-16 px-6">
+        <div class="max-w-5xl mx-auto">
+            <div class="text-center mb-12">
+                <span class="inline-block bg-teal-50 text-teal-700 text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wide mb-3">Kriteria Penilaian</span>
+                <h2 class="text-3xl font-bold text-gray-800">Kriteria Penerima Bantuan</h2>
+                <p class="text-gray-500 mt-2">Acuan penilaian yang digunakan dalam sistem</p>
+            </div>
+
+            <div class="space-y-10">
+                {{-- Kriteria 1 --}}
+                <div>
+                    <h3 class="font-semibold text-gray-800 mb-3">Kriteria 1 : Kategori Desil</h3>
+                    <div class="overflow-x-auto rounded-xl border border-gray-200">
+                        <table class="w-full text-sm text-left">
+                            <thead class="bg-teal-50 text-gray-700">
+                                <tr>
+                                    <th class="px-4 py-3 font-semibold">Desil</th>
+                                    <th class="px-4 py-3 font-semibold">Pendapatan</th>
+                                    <th class="px-4 py-3 font-semibold">Nilai</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-200">
+                                <tr><td class="px-4 py-3">Desil 1</td><td class="px-4 py-3">&lt; Rp 480.000</td><td class="px-4 py-3">1</td></tr>
+                                <tr><td class="px-4 py-3">Desil 2</td><td class="px-4 py-3">Rp 480.000 – Rp 600.000</td><td class="px-4 py-3">2</td></tr>
+                                <tr><td class="px-4 py-3">Desil 3</td><td class="px-4 py-3">Rp 600.000 – Rp 750.000</td><td class="px-4 py-3">3</td></tr>
+                                <tr><td class="px-4 py-3">Desil 4</td><td class="px-4 py-3">Rp 750.000 – Rp 1.100.000</td><td class="px-4 py-3">4</td></tr>
+                                <tr><td class="px-4 py-3">Desil 5</td><td class="px-4 py-3">Rp 1.100.000 – Rp 1.800.000</td><td class="px-4 py-3">5</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                {{-- Kriteria 2 --}}
+                <div>
+                    <h3 class="font-semibold text-gray-800 mb-3">Kriteria 2 : Jumlah Anggota Keluarga Dalam 1 KK</h3>
+                    <div class="overflow-x-auto rounded-xl border border-gray-200">
+                        <table class="w-full text-sm text-left">
+                            <thead class="bg-teal-50 text-gray-700">
+                                <tr>
+                                    <th class="px-4 py-3 font-semibold">Anggota</th>
+                                    <th class="px-4 py-3 font-semibold">Nilai</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-200">
+                                <tr><td class="px-4 py-3">1 Orang</td><td class="px-4 py-3">1</td></tr>
+                                <tr><td class="px-4 py-3">2 Orang</td><td class="px-4 py-3">2</td></tr>
+                                <tr><td class="px-4 py-3">3 Orang</td><td class="px-4 py-3">3</td></tr>
+                                <tr><td class="px-4 py-3">4 Orang</td><td class="px-4 py-3">4</td></tr>
+                                <tr><td class="px-4 py-3">&ge; 5 Orang</td><td class="px-4 py-3">5</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                {{-- Kriteria 3 --}}
+                <div>
+                    <h3 class="font-semibold text-gray-800 mb-3">Kriteria 3 : Status Tempat Tinggal</h3>
+                    <div class="overflow-x-auto rounded-xl border border-gray-200">
+                        <table class="w-full text-sm text-left">
+                            <thead class="bg-teal-50 text-gray-700">
+                                <tr>
+                                    <th class="px-4 py-3 font-semibold">Anggota</th>
+                                    <th class="px-4 py-3 font-semibold">Nilai</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-200">
+                                <tr><td class="px-4 py-3">Milik Sendiri Sangat Layak</td><td class="px-4 py-3">1</td></tr>
+                                <tr><td class="px-4 py-3">Milik Sendiri Cukup Layak</td><td class="px-4 py-3">2</td></tr>
+                                <tr><td class="px-4 py-3">Milik Sendiri Kurang Layak</td><td class="px-4 py-3">3</td></tr>
+                                <tr><td class="px-4 py-3">Tinggal Dengan Anggota Keluarga Lain</td><td class="px-4 py-3">4</td></tr>
+                                <tr><td class="px-4 py-3">Kontrak Atau Sewa</td><td class="px-4 py-3">5</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                {{-- Kriteria 4 --}}
+                <div>
+                    <h3 class="font-semibold text-gray-800 mb-3">Kriteria 4 : Kondisi Ekonomi</h3>
+                    <div class="overflow-x-auto rounded-xl border border-gray-200">
+                        <table class="w-full text-sm text-left">
+                            <thead class="bg-teal-50 text-gray-700">
+                                <tr>
+                                    <th class="px-4 py-3 font-semibold">Anggota</th>
+                                    <th class="px-4 py-3 font-semibold">Nilai</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-200">
+                                <tr><td class="px-4 py-3">Penghasilan Terjamin Atau Stabil</td><td class="px-4 py-3">1</td></tr>
+                                <tr><td class="px-4 py-3">Penghasilan Cukup</td><td class="px-4 py-3">2</td></tr>
+                                <tr><td class="px-4 py-3">Penghasilan Rendah</td><td class="px-4 py-3">3</td></tr>
+                                <tr><td class="px-4 py-3">Penghasilan Sangat Rendah</td><td class="px-4 py-3">4</td></tr>
+                                <tr><td class="px-4 py-3">Tidak Berpenghasilan</td><td class="px-4 py-3">5</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                {{-- Kriteria 5 --}}
+                <div>
+                    <h3 class="font-semibold text-gray-800 mb-3">Kriteria 5 : Kepemilikan Aset</h3>
+                    <div class="overflow-x-auto rounded-xl border border-gray-200">
+                        <table class="w-full text-sm text-left">
+                            <thead class="bg-teal-50 text-gray-700">
+                                <tr>
+                                    <th class="px-4 py-3 font-semibold">Anggota</th>
+                                    <th class="px-4 py-3 font-semibold">Nilai</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-200">
+                                <tr><td class="px-4 py-3">Aset Berlimpah</td><td class="px-4 py-3">1</td></tr>
+                                <tr><td class="px-4 py-3">Aset Cukup</td><td class="px-4 py-3">2</td></tr>
+                                <tr><td class="px-4 py-3">Aset Minim</td><td class="px-4 py-3">3</td></tr>
+                                <tr><td class="px-4 py-3">Aset Sangat Minim</td><td class="px-4 py-3">4</td></tr>
+                                <tr><td class="px-4 py-3">Tidak Memiliki Aset</td><td class="px-4 py-3">5</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{-- Divider --}}
+    <div class="bg-gray-50 h-2"></div>
+
     {{-- Contact Section --}}
     <div class="bg-gray-50 py-16 px-6">
         <div class="max-w-5xl mx-auto">

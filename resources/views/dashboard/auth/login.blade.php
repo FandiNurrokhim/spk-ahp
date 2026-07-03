@@ -166,12 +166,15 @@
                 @csrf
                 <div>
                     <label class="block text-sm">
-                        <span class="text-gray-700 dark:text-gray-400">Email</span>
+                        <span class="text-gray-700 dark:text-gray-400">Email Atau NIK</span>
                         <input
                             class="block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-teal-400 focus:outline-none focus:shadow-outline-teal dark:text-gray-300 dark:focus:shadow-outline-gray form-input"
-                            placeholder="Email" type="email" name="email" value="{{ old('email') }}" required
+                            placeholder="Email atau NIK" type="text" name="login" value="{{ old('login') }}" required
                             autofocus />
                     </label>
+                    @error('login')
+                        <label class="text-error text-xs">{{ $message }}</label>
+                    @enderror
                 </div>
                 <div>
                     <label class="block mt-4 text-sm">

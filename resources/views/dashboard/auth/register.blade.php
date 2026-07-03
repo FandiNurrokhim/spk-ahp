@@ -155,13 +155,24 @@
             @csrf
             <div>
                 <label class="block text-sm">
-                    <span class="text-gray-700 dark:text-gray-400">Name</span>
+                    <span class="text-gray-700 dark:text-gray-400">Nama</span>
                     <input
                         class="block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-teal-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input"
-                        placeholder="Name" type="text" name="name" value="{{ old('name') }}" required
+                        placeholder="Nama" type="text" name="name" value="{{ old('name') }}" required
                         autofocus />
                 </label>
                 @error('name')
+                    <label class="text-error text-xs">{{ $message }}</label>
+                @enderror
+            </div>
+            <div>
+                <label class="block mt-4 text-sm">
+                    <span class="text-gray-700 dark:text-gray-400">NIK</span>
+                    <input
+                        class="block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-teal-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input"
+                        placeholder="NIK" type="text" name="nik" value="{{ old('nik') }}" required />
+                </label>
+                @error('nik')
                     <label class="text-error text-xs">{{ $message }}</label>
                 @enderror
             </div>
@@ -185,7 +196,7 @@
             <div>
                 <label class="block mt-4 text-sm">
                     <span class="text-gray-700 dark:text-gray-400">
-                        Confirm password
+                        Konfirmasi password
                     </span>
                     <input
                         class="block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-teal-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input"

@@ -15,6 +15,7 @@ class UserSeeder extends Seeder
     {
         User::factory()->create([
             'name' => 'Admin',
+            'nik' => '3518010101010001',
             'email' => 'admin@gmail.com',
             'role' => 'admin',
             'password' => bcrypt('password'),
